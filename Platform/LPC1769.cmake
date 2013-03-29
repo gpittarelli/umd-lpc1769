@@ -18,7 +18,8 @@ message(STATUS "GNU Toolchain at: ${LPCXPRESSO_GNU_DIR}")
 message(STATUS "LPCXpresso utilities at: ${LPCXPRESSO_BIN_DIR}")
 
 # which compilers to use for C and C++
-find_program(CMAKE_C_COMPILER arm-none-eabi-gcc ${LPCXPRESSO_GNU_DIR})
+find_program(CMAKE_C_COMPILER arm-none-eabi-gcc ${LPCXPRESSO_GNU_DIR}
+             NO_DEFAULT_PATH)
 #find_program(CMAKE_C_LINK_EXECUTABLE arm-none-eabi-ld ${LPCXPRESSO_GNU_DIR})
 message(STATUS "ARM C compiler: ${CMAKE_C_COMPILER}")
 
