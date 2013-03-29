@@ -1,6 +1,8 @@
 #ifndef __MAIN_h_
 #define __MAIN_h_
 
+#include <stdint.h>
+
 #define _BV(n) (1 << (n))
 
 #define DMA_BUFFER_LEN 64
