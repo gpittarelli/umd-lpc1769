@@ -47,9 +47,12 @@ The parameters are:
 
 Then to use a project, run CMake as above in the selected project
 directory, and then you can run LPCXpresso's flash utilities and gdb
-using your chosen build system.
+using your chosen build system (See 'Available Targets').
 
-Available targets
+The `Skeleton` directory inclues an example project which can be
+copied to create a new project.
+
+Available Targets
 ======
 
 The default build target builds a .axf file with debug settings.
