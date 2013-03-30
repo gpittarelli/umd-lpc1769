@@ -54,34 +54,34 @@ int main(void) {
     dac_dma_buffer[j] = (j%2)? 0xFFC0 : 0x0000;
   }
 
-  // Select 12MHz crystal oscillator
-  LPC_SC ->CLKSRCSEL = 1;
+  // Use main oscillator is 12MHz
+  LPC_SC->CLKSRCSEL = MAIN_OSCILLATOR;
 
   // PLL 0 Setup
   // M(multipler) value is 147
   // N(divider) value is 8
   // F_CCO = (2 * 147 * 12MHz)/8 = 441MHz
-  //
+  // Divide by 100: 441/100 = 4.41MHz
   PLL_init(147, 8, 100);
 
   // Peripheral power
   //  Power ADC (bit 12)
   //  (DAC always powered)
   //  GPDMA (bit 29)
-  LPC_SC ->PCONP |= _BV(12) | _BV(29);
+  LPC_SC->PCONP |= _BV(12) | _BV(29);
 
   // Choose undivided peripheral clock for:
   //                    ADC (CLK), DAC (CLK/8)
-  LPC_SC ->PCLKSEL0 |= (1 << 22) | (1 << 24);
+  LPC_SC->PCLKSEL0 |= (1 << 22) | (1 << 24);
 
   // Setup IO pins (not used currently, handy to keep around)
-  LPC_GPIO0 ->FIODIR = _BV(22);
-  LPC_GPIO0 ->FIOSET = _BV(22);
+  LPC_GPIO0->FIODIR = _BV(22);
+  LPC_GPIO0->FIOSET = _BV(22);
 
   // Configure pins
   //   P0.23 as AD0.0 (1 at bit 14)
   //   P0.26 as AOUT  (2 at bit 20)
-  LPC_PINCON ->PINSEL1 |= (1 << 14) | (2 << 20);
+  LPC_PINCON->PINSEL1 |= (1 << 14) | (2 << 20);
 
   // DMA Configuration register
   //   Enable DMA (1 at bit 0)
@@ -94,11 +94,11 @@ int main(void) {
   //  0 in bit 16 - Disable burst mode (enabled later)
   //  1 in bit 21 - Not in power-down mode
   //  0 in bits 26:24 - don't start a conversion yet
-  LPC_ADC ->ADCR = _BV(0) | _BV(21);
+  LPC_ADC->ADCR = _BV(0) | _BV(21);
 
   // A/D Interrupt Enable Register
   //  1 in bit 0 - Interrupt when conversion on ADC channel 0 completes
-  LPC_ADC ->ADINTEN = _BV(0);
+  LPC_ADC->ADINTEN = _BV(0);
 
   // DAC Control Register
   //  Enable counter (1 at bit 2)
@@ -141,8 +141,8 @@ int main(void) {
 
   volatile int i = 0;
   for (;;) {
-    if (i >= 1000000) {
-      LPC_GPIO0 ->FIOPIN ^= (1 << 22);
+    if (i >= 500000) {
+      LPC_GPIO0->FIOPIN ^= (1 << 22);
       i = 0;
     }
     ++i;
