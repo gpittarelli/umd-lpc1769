@@ -1,9 +1,9 @@
 /*
  ===============================================================================
  Name        : main.c
- Author      : 
+ Author      :
  Version     :
- Copyright   : Copyright (C) 
+ Copyright   : Copyright (C)
  Description : main definition
  ===============================================================================
  */
@@ -17,6 +17,7 @@
 #include <stdio.h>
 
 #include "main.h"
+#include "PLL.h"
 
 // Variable to store CRP value in. Will be placed automatically
 // by the linker when "Enable Code Read Protect" selected.
@@ -32,24 +33,6 @@ static uint32_t dac_dma_buffer[DMA_BUFFER_LEN] = {
     0, 0xFFC0, 0, 0xFFC0, 0, 0xFFC0, 0, 0xFFC0, 0, 0xFFC0, 0, 0xFFC0,
     0, 0xFFC0, 0, 0xFFC0, 0, 0xFFC0, 0, 0xFFC0, 0, 0xFFC0, 0, 0xFFC0,
     0, 0xFFC0, 0, 0xFFC0
-    /*
-    0x8000, 0x8C80, 0x9900, 0xA500, 0xB100, 0xBC40,
-    0xC700, 0xD100, 0xDA40, 0xE2C0, 0xEA40, 0xF0C0, 0xF600, 0xFA40, 0xFD40,
-    0xFF40, 0xFFC0, 0xFF40, 0xFD40, 0xFA40, 0xF600, 0xF0C0, 0xEA40, 0xE2C0,
-    0xDA40, 0xD100, 0xC700, 0xBC40, 0xB100, 0xA500, 0x9900, 0x8C80, 0x8000,
-    0x7380, 0x6700, 0x5B00, 0x4F00, 0x43C0, 0x3900, 0x2F00, 0x25C0, 0x1D40,
-    0x15C0, 0x0F40, 0x0A00, 0x05C0, 0x02C0, 0x00C0, 0x0040, 0x00C0, 0x02C0,
-    0x05C0, 0x0A00, 0x0F40, 0x15C0, 0x1D40, 0x25C0, 0x2F00, 0x3900, 0x43C0,
-    0x4F00, 0x5B00, 0x6700, 0x7380
-
-    0x8000, 0x8C80, 0x9900, 0xA500, 0xB100, 0xBC40,
-    0xC700, 0xD100, 0xDA40, 0xE2C0, 0xEA40, 0xF0C0, 0xF600, 0xFA40, 0xFD40,
-    0xFF40, 0xFFC0, 0xFF40, 0xFD40, 0xFA40, 0xF600, 0xF0C0, 0xEA40, 0xE2C0,
-    0xDA40, 0xD100, 0xC700, 0xBC40, 0xB100, 0xA500, 0x9900, 0x8C80, 0x8000,
-    0x7380, 0x6700, 0x5B00, 0x4F00, 0x43C0, 0x3900, 0x2F00, 0x25C0, 0x1D40,
-    0x15C0, 0x0F40, 0x0A00, 0x05C0, 0x02C0, 0x00C0, 0x0040, 0x00C0, 0x02C0,
-    0x05C0, 0x0A00, 0x0F40, 0x15C0, 0x1D40, 0x25C0, 0x2F00, 0x3900, 0x43C0,
-    0x4F00, 0x5B00, 0x6700, 0x7380 */
 };
 
 // DMA Linked List Nodes, in AHB SRAM
@@ -60,27 +43,9 @@ static DMALinkedListNode dmaLLNode;
 
 uint_fast16_t pos = 0;
 void ADC_IRQHandler(void) {
-  /*
-  uint_fast16_t analog_val = (LPC_ADC ->ADDR0 >> 4) & 0x0fff;
-
-  // ADC is 12 bits, but DAC is only 10, so chop off the bottom 2 bits
-  analog_val >>= 2;
-
-  // Write analog_val to DAC
-  LPC_DAC ->DACR = ((LPC_DAC ->DACR) & ~(0x3ff << 6)) | (analog_val << 6);
-  */
-  // Equivalent to above (slight efficiency improvement):
-
-  //asm volatile("bfc.w r2, #6, #10");
-  //LPC_DAC ->DACR &= ~(0x3ff << 6);
-  //LPC_DAC ->DACR = (LPC_ADC ->ADDR0 & (0x03ff << 6));
-
-  /* Write to next pos in dma buffer: */
-  //dac_dma_buffer[pos & (DMA_BUFFER_LEN - 1)] = (LPC_ADC ->ADDR0 & (0x03ff << 6));
   uint_fast16_t volatile analog_val = (LPC_ADC ->ADDR0 >> 4) & 0x0fff;
   analog_val = (analog_val - 0) * (0xffff - 200) / (0xfff - 0) + 200;
   LPC_DAC->DACCNTVAL = analog_val;
-  //++pos;
 }
 
 int main(void) {
@@ -96,30 +61,8 @@ int main(void) {
   // M(multipler) value is 147
   // N(divider) value is 8
   // F_CCO = (2 * 147 * 12MHz)/8 = 441MHz
-  LPC_SC ->PLL0CFG = (147 - 1) | ((8 - 1) << 16);
-
-  // F_CCO = (2 * 96 * 12MHz)/6 = 384MHz
-  //LPC_SC ->PLL0CFG = (96 - 1) | ((6 - 1) << 16);
-
-  // Enable PLL0
-  LPC_SC ->PLL0CON = 0x01;
-
-  LPC_SC ->PLL0FEED = 0xAA;
-  LPC_SC ->PLL0FEED = 0x55;
-
-  // Wait for PLL0 Lock
-  while (!(LPC_SC ->PLL0STAT & (1 << 26)))
-    ;
-
-  // Connect PLL0
-  LPC_SC ->PLL0CON = 0x03;
-
-  LPC_SC ->PLL0FEED = 0xAA;
-  LPC_SC ->PLL0FEED = 0x55;
-
-  // Set clock divider to 12, so final running clock speed will be:
-  // (441 / 100) = 4.41MHz
-  LPC_SC ->CCLKCFG = (100 - 1);
+  //
+  PLL_init(147, 8, 100);
 
   // Peripheral power
   //  Power ADC (bit 12)
