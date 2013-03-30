@@ -15,23 +15,24 @@ add_custom_target(lst
 
 if(${CMAKE_HOST_WIN32})
 
-  set(LPCXPRESSO_WIRE hid)
-
   add_custom_target(boot
     COMMAND ${LPCXPRESSO_BIN_DIR}/Scripts/bootLPCXpresso.cmd hid)
 
 else()
 
-  set(LPCXPRESSO_WIRE winusb)
-
   add_custom_target(boot
-    COMMAND ${LPCXPRESSO_BIN_DIR}/dfu-util -d 0471:df55 -c 0 -t 2048 -R -D ${LPCXPRESSO_BIN_DIR}/LPCXpressoWIN.enc)
+    COMMAND ${LPCXPRESSO_BIN_DIR}/dfu-util -d 0471:df55 -c 0 -t 2048 -R
+                               -D ${LPCXPRESSO_BIN_DIR}/LPCXpressoWIN.enc)
 
 endif()
 
 
 add_custom_target(gdb
-  COMMAND ${LPCXPRESSO_GNU_DIR}/arm-none-eabi-gdb --eval-command="set remotetimeout 60000" --eval-command="set arm force-mode thumb"  --eval-command="target extended-remote | ${LPCXPRESSO_BIN_DIR}/crt_emu_cm3_nxp -2 -g -pLPC1769 -vendor=NXP -wire=${LPCXPRESSO_WIRE}" --symbols="${EXECUTABLE_OUTPUT_PATH}/${CMAKE_PROJECT_NAME}.axf")
+  COMMAND ${LPCXPRESSO_GNU_DIR}/arm-none-eabi-gdb
+               --eval-command="set remotetimeout 60000"
+               --eval-command="set arm force-mode thumb"
+        --eval-command="target extended-remote | ${LPCXPRESSO_FLASH} -2 -g"
+               --symbols="${FULL_OUTPUT_NAME}.debug")
 
 add_custom_target(flash
-  COMMAND ${LPCXPRESSO_BIN_DIR}/crt_emu_cm3_nxp -2 -pLPC1769 -vendor=NXP -flash-load-exec="${EXECUTABLE_OUTPUT_PATH}/${CMAKE_PROJECT_NAME}.axf" -wire=${LPCXPRESSO_WIRE})
+  COMMAND ${LPCXPRESSO_FLASH} -2 -flash-load-exec="${FULL_OUTPUT_NAME}")
