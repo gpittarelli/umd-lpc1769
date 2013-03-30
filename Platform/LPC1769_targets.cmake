@@ -29,10 +29,14 @@ endif()
 
 add_custom_target(gdb
   COMMAND ${LPCXPRESSO_GNU_DIR}/arm-none-eabi-gdb
-               --eval-command="set remotetimeout 60000"
-               --eval-command="set arm force-mode thumb"
-        --eval-command="target extended-remote | ${LPCXPRESSO_FLASH} -2 -g"
-               --symbols="${FULL_OUTPUT_NAME}.debug")
+               --eval-command=\"set remotetimeout 60000\"
+               --eval-command=\"set arm force-mode thumb\"
+        --eval-command=\"target extended-remote | ${LPCXPRESSO_FLASH} -2 -g\"
+               --exec=\"${FULL_OUTPUT_NAME}\"
+               --symbols=\"${FULL_OUTPUT_NAME}.debug\")
 
 add_custom_target(flash
   COMMAND ${LPCXPRESSO_FLASH} -2 -flash-load-exec="${FULL_OUTPUT_NAME}")
+
+add_custom_target(flash-halt
+  COMMAND ${LPCXPRESSO_FLASH} -2 -flash-load="${FULL_OUTPUT_NAME}")
