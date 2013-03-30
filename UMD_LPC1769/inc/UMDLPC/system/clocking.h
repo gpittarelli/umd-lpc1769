@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef __PLL_h_
-#define __PLL_h_
+#ifndef __UMDLPC_system_clocking_h_
+#define __UMDLPC_system_clocking_h_
 
 #include "LPC17xx.h"
 #include <cr_section_macros.h>
@@ -25,5 +25,11 @@ void PLL_init(uint_fast16_t m, uint_fast16_t n, uint_fast16_t cclkdiv);
  * Disconnect the PLL
  */
 void PLL_bypass();
+
+enum ClockSource {
+  INTERNAL_RC = 0,
+  MAIN_OSCILLATOR = 1,
+  RTC_OSCILLATOR = 2
+};
 
 #endif
