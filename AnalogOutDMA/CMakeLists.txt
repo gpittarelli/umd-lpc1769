@@ -20,6 +20,10 @@ add_definitions(
   -D__CODE_RED
   -D__USE_CMSIS=CMSISv2p00_LPC17xx
 
+  -O0
+  -g3
+  -DDEBUG
+
   -Wall
   -Wshadow
   -Wcast-qual
@@ -43,17 +47,4 @@ add_executable(${OUTPUT_NAME} ${SOURCES})
 set_target_properties(${OUTPUT_NAME} PROPERTIES LINKER_LANGUAGE C)
 target_link_libraries(${OUTPUT_NAME} CMSISv2p00_LPC17xx)
 
-add_custom_target(hex
-  DEPENDS ${OUTPUT_NAME}
-  COMMAND ${CMAKE_OBJCOPY} -Oihex ${OUTPUT_NAME}
-                ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_PROJECT_NAME}.hex)
-
-add_custom_target(bin
-  DEPENDS ${OUTPUT_NAME}
-  COMMAND ${CMAKE_OBJCOPY} -Obinary ${OUTPUT_NAME}
-                ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_PROJECT_NAME}.bin)
-
-add_custom_target(lst
-  DEPENDS ${OUTPUT_NAME}
-  COMMAND ${CMAKE_OBJDUMP} -x -D ${EXECUTABLE_OUTPUT_PATH}/${OUTPUT_NAME}
-                       > ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_PROJECT_NAME}.lst)
+include(../Platform/LPC1769_targets.cmake)
