@@ -42,9 +42,19 @@ add_definitions(
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(OUTPUT_NAME ${CMAKE_PROJECT_NAME}.axf)
+set(FULL_OUTPUT_NAME ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_PROJECT_NAME}.axf)
 
 add_executable(${OUTPUT_NAME} ${SOURCES})
 set_target_properties(${OUTPUT_NAME} PROPERTIES LINKER_LANGUAGE C)
-target_link_libraries(${OUTPUT_NAME} CMSISv2p00_LPC17xx)
+target_link_libraries(${OUTPUT_NAME} CMSISv2p00_LPC17xx UMD_LPC1769)
+
+# Separate debug symbols into their own file
+add_custom_command(
+  TARGET ${OUTPUT_NAME}
+  POST_BUILD
+  COMMAND ${LPCXPRESSO_OBJCOPY} --only-keep-debug ${FULL_OUTPUT_NAME}
+                                ${FULL_OUTPUT_NAME}.debug
+  COMMAND ${LPCXPRESSO_STRIP} -g ${FULL_OUTPUT_NAME}
+)
 
 include(../Platform/LPC1769_targets.cmake)
