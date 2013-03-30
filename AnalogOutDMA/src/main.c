@@ -17,7 +17,7 @@
 #include <stdio.h>
 
 #include "main.h"
-#include "UMDLPC/System/clocking.h"
+#include "UMDLPC/system/clocking.h"
 
 // Variable to store CRP value in. Will be placed automatically
 // by the linker when "Enable Code Read Protect" selected.
