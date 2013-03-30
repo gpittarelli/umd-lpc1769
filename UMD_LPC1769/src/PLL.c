@@ -33,3 +33,12 @@ void PLL_init(uint_fast16_t m, uint_fast16_t n, uint_fast16_t cclkdiv) {
   LPC_SC ->PLL0FEED = 0xAA;
   LPC_SC ->PLL0FEED = 0x55;
 }
+
+void PLL_bypass() {
+  // Bypass PLL0, use clock source directly
+  LPC_SC ->PLL0CON = 0;
+
+  // Feed the PLL register so the PLL0CON value goes into effect
+  LPC_SC ->PLL0FEED = 0xAA;
+  LPC_SC ->PLL0FEED = 0x55;
+}
