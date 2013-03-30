@@ -8,7 +8,7 @@ LPCXpresso which includes the ARM GCC Toolchain, NXP's LPC Library,
 and a command line utility to flash programs to the chip.
 
 CMake is used to allow building of this repository in many different
-operating systems and devleopment environments.
+operating systems and development environments.
 
 Developing in NXP's LPCXpresso IDE for the LPC1769 is not required,
 however certain proprietary utilities are required for flashing the
@@ -46,5 +46,35 @@ The parameters are:
     system targets.
 
 Then to use a project, run CMake as above in the selected project
-diretory, and then you can run LPCXpresso's flash utilities and gdb
+directory, and then you can run LPCXpresso's flash utilities and gdb
 using your chosen build system.
+
+Available targets
+======
+
+The default build target builds a .axf file with debug settings.
+
+The following targets are provided:
+
+  * `lst` Generate a .lst file, which includes an overview of all
+    the sections and symbols in your output, along with a complete
+    disassembly.
+  * `hex` and `bin` Generate alternate formats of the normal .axf
+    output, which may be useful if you want to use other tools.
+  * `boot` Boot the LPC-Link board. This is required before flashing
+    or debugging the microcontroller using the LPC-Link board.
+  * `flash` Write the currently built output to the
+    microcontroller. The microcontroller immediately starts running
+    after the flash is complete.
+  * `flash-halt` The same as `flash`, but the microcontroller is left
+    in a stopped state.
+  * `gdb` Launch a gdb session. Complete debug information is also
+    setup. The gdb server provided by LPCXpresso does not support the
+    required setting to allow `run` (`r`) to restart the program from
+    the correct entry point. Instead, `run` results in a hard
+    fault. To restart execution, you should instead type `info files`
+    to find the entry point of the current image, and then jump to the
+    entry point with `jump` (`j`). You can also use the `load`
+    command, however that will flash the entire image to the chip
+    again, which may take a while for projects with large compiled
+    binaries.
