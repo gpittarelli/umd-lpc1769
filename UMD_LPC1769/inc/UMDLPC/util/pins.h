@@ -19,32 +19,40 @@
 #include <stdint.h>
 
 #define DEFINE_PIN(name, port, pin) \
-inline void name##_DEASSERT() { \
+inline static void name##_DEASSERT() { \
   LPC_GPIO##port ->FIOCLR |= (1 << pin); \
 } \
-inline void name##_OFF() { \
+ \
+inline static void name##_OFF() { \
   LPC_GPIO##port ->FIOCLR |= (1 << pin); \
 } \
-inline void name##_LOW() { \
+ \
+inline static void name##_LOW() { \
   LPC_GPIO##port ->FIOCLR |= (1 << pin); \
 } \
-inline void name##_ASSERT() { \
+ \
+inline static void name##_ASSERT() { \
   LPC_GPIO##port ->FIOSET |= (1 << pin); \
 } \
-inline void name##_ON() { \
+ \
+inline static void name##_ON() { \
   LPC_GPIO##port ->FIOSET |= (1 << pin); \
 } \
-inline void name##_HIGH() { \
+ \
+inline static void name##_HIGH() { \
   LPC_GPIO##port ->FIOSET |= (1 << pin); \
 } \
-inline void name##_INPUT() { \
+ \
+inline static void name##_INPUT() { \
   LPC_GPIO##port ->FIODIR &= ~(1 << pin); \
 } \
-inline void name##_OUTPUT() { \
+ \
+inline static void name##_OUTPUT() { \
   LPC_GPIO##port ->FIODIR |= (1 << pin); \
 } \
-inline uint_fast8_t name##_OUTPUT() { \
-  return ((( LPC_GPIO##port ->FIOPIN) & (1 << pin)) >> pin);  \
+ \
+inline static uint_fast8_t name##_READ() { \
+  return ( LPC_GPIO##port ->FIOPIN >> pin) & 1;  \
 }
 
 #endif
