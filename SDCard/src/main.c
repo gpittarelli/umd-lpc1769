@@ -19,9 +19,17 @@
 // See crp.h header for more information
 __CRP const unsigned int CRP_WORD = CRP_NO_CRP;
 
-void sd_command(uint_fast8_t command, uint) {
-   LPC_SSP0
+void sd_command(uint_fast8_t command, uint_fast32_t arguments) {
+  // Write command:
+  LPC_SSP0->DR = (1 << 7) | command;
 
+  LPC_SSP0->DR = arguments >> 24;
+  LPC_SSP0->DR = arguments >> 16;
+  LPC_SSP0->DR = arguments >>  8;
+  LPC_SSP0->DR = arguments;
+
+  // Valid CRC for the only packet which will use CRC, and the stop bit
+  LPC_SSP0->DR = 0x95;
 }
 
 int main(void) {
@@ -76,7 +84,7 @@ int main(void) {
     // Writing any value to DR adds a frame to the fifo.
     // The data doesn't matte, all we want is a packet to be sent, which
     // includes clocking the clock pin
-    LPC_SSP0->DR = 0xff;
+    LPC_SSP0->DR = 0xFF;
   }
 
   // Wait for FIFO output to be complete
