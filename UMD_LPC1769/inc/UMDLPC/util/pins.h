@@ -22,35 +22,30 @@
 inline static void name##_DEASSERT() { \
   LPC_GPIO##port ->FIOCLR |= (1 << pin); \
 } \
- \
 inline static void name##_OFF() { \
   LPC_GPIO##port ->FIOCLR |= (1 << pin); \
 } \
- \
 inline static void name##_LOW() { \
   LPC_GPIO##port ->FIOCLR |= (1 << pin); \
 } \
- \
 inline static void name##_ASSERT() { \
   LPC_GPIO##port ->FIOSET |= (1 << pin); \
 } \
- \
 inline static void name##_ON() { \
   LPC_GPIO##port ->FIOSET |= (1 << pin); \
 } \
- \
 inline static void name##_HIGH() { \
   LPC_GPIO##port ->FIOSET |= (1 << pin); \
 } \
- \
+inline static void name##_TOGGLE() { \
+  LPC_GPIO##port ->FIOPIN ^= (1 << pin); \
+} \
 inline static void name##_INPUT() { \
   LPC_GPIO##port ->FIODIR &= ~(1 << pin); \
 } \
- \
 inline static void name##_OUTPUT() { \
   LPC_GPIO##port ->FIODIR |= (1 << pin); \
 } \
- \
 inline static uint_fast8_t name##_READ() { \
   return ( LPC_GPIO##port ->FIOPIN >> pin) & 1;  \
 }
