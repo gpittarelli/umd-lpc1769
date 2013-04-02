@@ -1,7 +1,8 @@
-/* PLL.h
+/* clocking.h
  *
- * Declares handy utility functions for the Phase Locked Loop
- * (PLL). Refer to chapter 4 (4.5 in particular) for more information.
+ * Declares handy utility functions for configuring the clock, via the
+ * Phase Locked Loop (PLL). Refer to chapter 4 (4.5 in particular) for
+ * more information.
  *
  */
 
