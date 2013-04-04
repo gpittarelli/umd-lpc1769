@@ -70,7 +70,7 @@ int main(void) {
   SysTick_Config(SystemCoreClock/100 - 1);
 
   // Peripheral power
-  LPC_SC->PCONP = PCSSP0;
+  LPC_SC->PCONP = PC_SSP0;
 
   // Peripheral clocks
   // LPC_SC->PCLKSEL0 = 0;
