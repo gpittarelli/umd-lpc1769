@@ -6,7 +6,7 @@ lib/
 
 # Can't distribute these in repo, must get from LPCXpresso
 CMSISv2p00_LPC17xx/
-cr_startup_lpc176x.c
+#cr_startup_lpc176x.c
 
 # Local CMake files
 CMakeCache.txt

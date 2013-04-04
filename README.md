@@ -23,8 +23,7 @@ Setup
 ======
 
 Extract and copy CMSISv2p00_LPC17xx.zip into the folder with the same
-name in the root of this repository. Also find cr\_startup\_lpc176x.c
-and copy it into each project you want to compile.
+name in the root of this repository.
 
 First have CMake installed (version >= 2.4.8), and LPCXpresso (tested
 with version 5 installed, but should work with any version with the
@@ -81,3 +80,10 @@ The following targets are provided:
     command, however that will flash the entire image to the chip
     again, which may take a while for projects with large compiled
     binaries.
+
+Command Overview
+======
+
+For reference, the commands called by the toolchain look like:
+
+GCC
