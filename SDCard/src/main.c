@@ -19,17 +19,46 @@
 // See crp.h header for more information
 __CRP const unsigned int CRP_WORD = CRP_NO_CRP;
 
+static void inline spi_write_nowait(uint_fast8_t byte) {
+  LPC_SSP0->DR = byte;
+}
+
+void spi_write(uint_fast8_t byte) {
+  spi_write_nowait(byte);
+
+  // Wait for FIFO output to be complete
+  while (!(LPC_SSP0->SR & _BV(0)))
+    ;
+}
+
 void sd_command(uint_fast8_t command, uint_fast32_t arguments) {
   // Write command:
-  LPC_SSP0->DR = (1 << 7) | command;
+  spi_write_nowait((1 << 7) | command);
 
-  LPC_SSP0->DR = arguments >> 24;
-  LPC_SSP0->DR = arguments >> 16;
-  LPC_SSP0->DR = arguments >>  8;
-  LPC_SSP0->DR = arguments;
+  spi_write_nowait(arguments >> 24);
+  spi_write_nowait(arguments >> 16);
+  spi_write_nowait(arguments >> 8);
+  spi_write_nowait(arguments);
 
-  // Valid CRC for the only packet which will use CRC, and the stop bit
-  LPC_SSP0->DR = 0x95;
+  // the last byte is (CRC << 1) | 1
+  // this value is precomupted to have the right CRC for the first packet,
+  // which is the only packet that will be CRC-verified
+  spi_write(0x95);
+}
+
+static uint32_t systick_delay_timer = 0;
+void SysTick_Handler (void) /* SysTick Interrupt Handler (1ms)   */
+{
+  BUILTIN_LED_TOGGLE();
+  if (systick_delay_timer){
+    --systick_delay_timer;
+  }
+}
+
+void systick_delay_millis(uint32_t millis)
+{
+  systick_delay_timer = millis;
+  while (systick_delay_timer);
 }
 
 int main(void) {
@@ -37,6 +66,8 @@ int main(void) {
   // (remember to update CLOCK_SPEED)
   LPC_SC->CLKSRCSEL = MAIN_OSCILLATOR;
   PLL_init(12, 1, 12);
+
+  SysTick_Config(SystemCoreClock/100 - 1);
 
   // Peripheral power
   LPC_SC->PCONP = PCSSP0;
@@ -55,8 +86,9 @@ int main(void) {
   // Setup GPIO pins
   //  LPC_GPIO0->FIODIR = 0;
   //  LPC_GPIO0->FIOSET = 0;
-  // SD Card CS pin, which we'll control manually:
+  // We'll control the SD card CS manually (vs letting SSP0 control it)
   SPI_CS_OUTPUT();
+  BUILTIN_LED_OUTPUT();
 
   // SSP0 Control Register 0
   //   8-bit transfers (7 at 3:0)
@@ -67,6 +99,8 @@ int main(void) {
   // The SD spec requires a slow start at 400khz
   LPC_SSP0->CPSR = CLOCK_SPEED / 400000;
 
+  systick_delay_millis(1);
+
   // SPI Control Register 1
   //   Defaults to Master
   //   Start serial communications (bit 1)
@@ -76,41 +110,22 @@ int main(void) {
 
   // Clock the sd card at least 74 times before any actual communication
   // (For internal SD card initialization)
-  for (uint_fast8_t i=0; i < 74; ++i) {
-    // If FIFO is full, wait for space
-    while (!(LPC_SSP0->SR & _BV(1)))
-      ;
-
-    // Writing any value to DR adds a frame to the fifo.
-    // The data doesn't matte, all we want is a packet to be sent, which
-    // includes clocking the clock pin
-    LPC_SSP0->DR = 0xFF;
+  for (uint_fast8_t i=0; i < 10; ++i) {
+    spi_write(0xFF);
   }
-
-  // Wait for FIFO output to be complete
-  while (!(LPC_SSP0->SR & _BV(0)))
-    ;
 
   SPI_CS_DEASSERT();
 
   // Delay 16 more clocks
-  for (uint_fast8_t i=0; i < 74; ++i) {
-    while (!(LPC_SSP0->SR & _BV(1)))
-      ;
-    LPC_SSP0->DR = 0xff;
-  }
+  spi_write_nowait(0xFF);
+  spi_write(0xFF);
+
+  spi_write(CMD0);
 
 
-  // Wait for FIFO output to be complete
-  while (!(LPC_SSP0->SR & _BV(0)))
-    ;
-
-  LPC_SSP0->DR = CMD0;
-
-
-
+  uint32_t i = 0;
   while (1) {
-
+    spi_write(i++);
   }
   return 0;
 }

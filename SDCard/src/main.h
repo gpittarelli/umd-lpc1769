@@ -18,5 +18,6 @@
 #define _BV(n) (1 << (n))
 
 DEFINE_PIN(SPI_CS, 0, 15);
+DEFINE_PIN(BUILTIN_LED, 0, 22);
 
 #endif
