@@ -10,8 +10,11 @@ endif()
 
 file(TO_CMAKE_PATH ${LPCXPRESSO_DIR} LPCXPRESSO_DIR)
 
-file(COPY "${LPCXPRESSO_DIR}/Examples/NXP/LPC1000/LPC17xx/CMSISv2p00_LPC17xx.zip"
-       DESTINATION ".")
+set(CMSIS_ZIP_PATH "Examples/NXP/LPC1000/LPC17xx/CMSISv2p00_LPC17xx.zip")
+file(
+  COPY "${LPCXPRESSO_DIR}/${CMSIS_ZIP_PATH}"
+  DESTINATION "."
+)
 
 file(WRITE "../LPCXpressoDIR.cmake"
 "\# Auto generated file
