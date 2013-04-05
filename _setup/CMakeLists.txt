@@ -16,7 +16,7 @@ file(
   DESTINATION "."
 )
 
-file(WRITE "../LPCXpressoDIR.cmake"
+file(WRITE "../LPCXpressoDir.cmake"
 "\# Auto generated file
 set(LPCXPRESSO_DIR \"${LPCXPRESSO_DIR}\")
 ")
