@@ -19,6 +19,13 @@ uint32_t audio_buffer[AUDIO_BUFFER_LEN];
 __attribute__ ((section(".ahb_ram")))
 DMALinkedListNode dma_ll_pool[DMA_LL_POOL_SIZE];
 
+uint_fast8_t waiting_for_input = 1;
+
+void DMA_IRQHandler(void) {
+
+  waiting_for_input = 0;
+}
+
 int main(void) {
   // Select 12MHz crystal oscillator
   LPC_SC ->CLKSRCSEL = 1;
@@ -35,6 +42,9 @@ int main(void) {
   //   P0.23 as AD0.0 (1 at bit 14)
   //   P0.26 as AOUT  (2 at bit 20)
   LPC_PINCON->PINSEL1 = (1 << 14) | (2 << 20);
+  STATUS_LED_OUTPUT();
+  RECORD_BUTTON_INPUT();
+  PLAY_BUTTON_INPUT();
 
   // We want to sample at 44.1khz, and a full sample takes 65 cycles,
   // so we want an ADC clock of 44,100*65 = 2,866,500.
@@ -136,8 +146,22 @@ int main(void) {
   // Set last node to terminate the transfer
   dma_ll_pool[ll_idx - 1].nextNode = 0;
 
-  while (1) {
+  // DMA Channel 0 Config (used for playback)
+  //  Leave channel disabled (0 at bit 0)
+  //  Source peripheral: 0 (default, bits  5:1)
+  //  Destination peripheral: DAC (7, bits  10:6)
+  //  Transfer Type: memory-to-peripheral (1, bits 13:11)
+  LPC_GPDMACH0->DMACCConfig = (7 << 6) | (1 << 11);
 
+  // DMA Channel 1 Config (used for recording)
+  //  Leave channel disabled (0 at bit 0)
+  //  Source peripheral: ADC (4, bits  5:1)
+  //  Destination peripheral: memory (default, bits  10:6)
+  //  Transfer Type: peripheral-to-memory (2, bits 13:11)
+  LPC_GPDMACH1->DMACCConfig = (4 << 1) | (2 << 11);
+
+  while (1) {
+    if (
   }
   return 0;
 }
