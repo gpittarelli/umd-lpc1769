@@ -20,7 +20,7 @@ The code base also requires an LPCXpresso install for the provided
 CMSIS library.
 
 Setup
-======
+-------
 
 Extract and copy CMSISv2p00_LPC17xx.zip into the folder with the same
 name in the root of this repository.
@@ -52,7 +52,7 @@ The `Skeleton` directory inclues an example project which can be
 copied to create a new project.
 
 Available Targets
-======
+------
 
 The default build target builds a .axf file with debug settings.
 
