@@ -17,7 +17,7 @@ with no proprietary software, the LPC-Link board can be chopped off
 and the remaining board with the LPC1769 can be programmed via JTAG.
 
 The code base also requires an LPCXpresso install for the provided
-CMSIS library and cr\_startup\_lpc176x.c.
+CMSIS library.
 
 Setup
 ======
