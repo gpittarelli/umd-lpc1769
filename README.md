@@ -1,4 +1,4 @@
-UMD LPC1796 Library
+UMD LPC1796 Examples
 ======
 
 This repository contains a simple library for the NXP LPC1769
