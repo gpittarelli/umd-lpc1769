@@ -82,8 +82,117 @@ The following targets are provided:
     binaries.
 
 Command Overview
-======
+------
 
-For reference, the commands called by the toolchain look like:
+For reference, the commands called by the toolchain look like.
 
-GCC
+### Compiling
+
+Compiling and linking are done with `arm-none-eabi-gcc`.
+
+Compiler flags:
+
+    -D__CODE_RED
+    -D__NEWLIB__
+    -D__USE_CMSIS=CMSISv2p00_LPC17xx
+    -I..\CMSISv2p00_LPC17xx\inc
+    -I..\UMD_LPC1769\inc
+    -Wall
+    -Wshadow
+    -Wcast-qual
+    -Wwrite-strings
+    -Winline
+    -fmessage-length=80
+    -ffunction-sections
+    -fdata-sections
+    -std=gnu99
+    -mcpu=cortex-m3
+    -mthumb
+
+To specify source input and object output:
+    -o out.obj -c in.c
+
+Extra flags for debugging:
+
+    -DDEBUG
+    -g
+    -O0
+
+Extra flags for release build:
+
+    -O3
+
+### Linking
+
+Linker flags:
+
+    -nostdlib
+    -Xlinker
+    --gc-sections
+    -mcpu=cortex-m3
+    -mthumb
+    -T ../Platform/LPC1769.ld
+
+Note the linker script `LPC1769.ld` in the `Platform` directory, which
+can be exchanged for `LPC1769_semihosting.ld` in order to build
+against the Newlib library for semihosting.
+
+### Booting the LPC-Link
+
+Before communicating with the LPC-Link board, the board has to be
+'booted' using the `dfu-util` tool:
+
+    dfu-util -d 0471:df55 -c 0 -t 2048 -R -D LPCXpressoWIN.enc
+
+Where LPCXpressoWIN.enc is a file in LPCXpresso's bin dir.
+
+On windows, a LPCXpresso provides a `bootLPCXpresso.cmd` script in the
+bin/Scripts directory which also boots the LPC-Link.
+
+### Separating debug symbols
+
+Debug files can be stripped from the created `.axf` executable and
+placed in a separate file.
+
+First `objcopy` is used to copy only the debug symbols to a new file:
+
+    arm-none-eabi-objcopy --only-keep-debug in.axf out.axf.debug
+
+Next `strip` is used to remove the debug symbols from the original
+file:
+
+    arm-none-eabi-strip -g in.axf
+
+### Converting output type
+
+To create a HEX file
+
+    objdump -Ohex in.axf out.bin
+
+To create a BIN file
+
+    objdump -Obinary in.axf out.bin
+
+### Creating a disassembly listing
+
+    objdump -x -D in.axf > out.lst
+
+### Debugging
+
+The debugger can be run two ways, with the gdb server inernally or externally:
+
+    arm-none-eabi-gdb --exec="in.axf" --symbols="in.axf.debug"
+
+Next the following commands are run:
+
+    set remotetimeout 60000
+    set arm force-mode thumb
+    target extended-remote | crt_emu_cm3_nxp -2 -g -wire=<wire_type> \
+                                      -pLPC1769 -vendor=NXP
+
+`wire_type` is `hid` on Windows 7, and `winusb` on most other systems
+(older Windows versions, Linux, etc.)
+
+These commands can be automated by placing them in a script file and
+specifying it with `--command=<script_file>`, or running each command
+with `--eval-command=<command>`.
