@@ -25,9 +25,9 @@ Setup
 Extract and copy CMSISv2p00_LPC17xx.zip into the folder with the same
 name in the root of this repository.
 
-First have CMake installed (version >= 2.4.8), and LPCXpresso (tested
-with version 5 installed, but should work with any version with the
-same toolchain) installed.
+First have CMake (version >= 2.4.8), and LPCXpresso (tested with
+version 5, but should work with any version with the same toolchain)
+installed.
 
 Then open `LPCXpressoDir.cmake` in the root directory and update
 LPCXPRESSO_DIR to point to the root of your LPCXpresso installation.
