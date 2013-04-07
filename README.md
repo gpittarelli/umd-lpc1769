@@ -22,18 +22,22 @@ CMSIS library.
 Setup
 -------
 
-Extract and copy CMSISv2p00_LPC17xx.zip into the folder with the same
-name in the root of this repository.
-
 First have CMake (version >= 2.4.8), and LPCXpresso (tested with
 version 5, but should work with any version with the same toolchain)
 installed.
 
-Then open `LPCXpressoDir.cmake` in the root directory and update
-LPCXPRESSO_DIR to point to the root of your LPCXpresso installation.
+In a terminal in the `_setup` directory of this repository, run:
 
-Next, run CMake in both the CMSISv2p00\_LPC17xx directory and the
-UMD\_LPC1769 directory:
+    cmake . -DLPCXPRESSO_DIR=<lpcxpresso_dir>
+
+Where `lpcxpresso_dir` is the root directory of your LPCXpresso
+installation (eg `/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso`).
+
+Then extract the `CMSISv2p00\_LPC17xx.zip` file into a folder of the
+same name.
+
+Next, run CMake in both the `CMSISv2p00\_LPC17xx` directory and the
+`UMD\_LPC1769` directories:
 
     cmake . -G "Unix Makefiles"
 
@@ -49,7 +53,8 @@ directory, and then you can run LPCXpresso's flash utilities and gdb
 using your chosen build system (See 'Available Targets').
 
 The `Skeleton` directory inclues an example project which can be
-copied to create a new project.
+copied to create new projects. Remember to update the `CMakeLists.txt`
+file in each new project to reflect the new project's name.
 
 Available Targets
 ------
