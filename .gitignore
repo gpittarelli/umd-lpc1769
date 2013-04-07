@@ -9,6 +9,7 @@ CMSISv2p00_LPC17xx/
 #cr_startup_lpc176x.c
 
 # Local CMake files
+LPCXpressoDir.cmake
 CMakeCache.txt
 CMakeFiles/
 CMakeCache/

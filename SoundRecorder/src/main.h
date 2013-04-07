@@ -23,6 +23,10 @@
 // ~.125 seconds of audio @ 44.1khz
 #define AUDIO_BUFFER_LEN 5012
 
-DEFINE_PIN();
+// builtin LED
+DEFINE_PIN(STATUS_LED, 0, 22);
+
+DEFINE_PIN(RECORD_BUTTON, 0, 4);
+DEFINE_PIN(PLAY_BUTTON, 0, 5);
 
 #endif
