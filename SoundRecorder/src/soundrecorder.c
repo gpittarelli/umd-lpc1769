@@ -1,13 +1,19 @@
 /*
  ===============================================================================
- Name        : main.c
- Author      :
- Version     :
- Description : main definition
+ Name        : soundrecorder.c
+ Author      : George Pittarelli
+ Description :
+   Implements a basic sound recorder on the LPC1769.
+
+   Two buttons and a mic are wired for input, and an LED and speaker
+   are used for output. One button, when pressed, triggers a DMA
+   transfer from the ADC to an audio buffer and the other button
+   starts a DMA transfer from the buffer to the DAC.
+
  ===============================================================================
  */
 
-#include "main.h"
+#include "soundrecorder.h"
 
 // Variable to store CRP value in. Will be placed automatically
 // by the linker when "Enable Code Read Protect" selected.
@@ -19,11 +25,29 @@ uint32_t audio_buffer[AUDIO_BUFFER_LEN];
 __attribute__ ((section(".ahb_ram")))
 DMALinkedListNode dma_ll_pool[DMA_LL_POOL_SIZE];
 
-uint_fast8_t waiting_for_input = 1;
+DMALinkedListNode *playback_node, *record_node;
+
+typedef enum {
+  WAITING, RECORDING, PLAYING
+} ProgramState;
+ProgramState current_state = WAITING;
 
 void DMA_IRQHandler(void) {
 
-  waiting_for_input = 0;
+  RECORDING_LED_OFF();
+  PLAYING_LED_OFF();
+  current_state = WAITING;
+}
+
+void load_dma_node(int channel, DMALinkedListNode *node) {
+  LPC_GPDMACH_TypeDef *dma_channel = LPC_GPDMACH0_BASE
+    + (channel * 0x20);
+  // 0x20 should be sizeof(LPC_GPDMACH_TypeDef)
+
+  dma_channel->DMACCSrcAddr  = node->sourceAddr;
+  dma_channel->DMACCDestAddr = node->destAddr;
+  dma_channel->DMACCControl  = node->dmaControl;
+  dma_channel->DMACCLLI      = node->nextNode;
 }
 
 int main(void) {
@@ -36,13 +60,14 @@ int main(void) {
   PLL_init(147, 8, 10);
 
   // Peripheral power (Note: DAC is always powered)
-  LPC_SC->PCONP = PC_ADC | PC_GPDMA;
+  LPC_SC->PCONP |= PC_ADC | PC_GPDMA;
 
   // Configure pins
   //   P0.23 as AD0.0 (1 at bit 14)
   //   P0.26 as AOUT  (2 at bit 20)
   LPC_PINCON->PINSEL1 = (1 << 14) | (2 << 20);
-  STATUS_LED_OUTPUT();
+  RECORDING_LED_OUTPUT();
+  PLAYING_LED_OUTPUT();
   RECORD_BUTTON_INPUT();
   PLAY_BUTTON_INPUT();
 
@@ -73,7 +98,6 @@ int main(void) {
   // Build up linked lists, for recording and playback
   // store 'pointers' *_ll_node as indexes into the array
   uint_fast16_t ll_idx = 0;
-  DMALinkedListNode *playback_node, *record_node;
 
   // TODO: Move these loops to a DMA library file
 
@@ -117,7 +141,7 @@ int main(void) {
   sound_buf_remaining = AUDIO_BUFFER_LEN;
   record_node = &(dma_ll_pool[ll_idx]);
   while ((sound_buf_remaining > 0) && (ll_idx < DMA_LL_POOL_SIZE)) {
-    dma_ll_pool[ll_idx].sourceAddr = (uint32_t) &(LPC_ADC ->ADDR0);
+    dma_ll_pool[ll_idx].sourceAddr = (uint32_t) &(LPC_ADC->ADDR0);
     dma_ll_pool[ll_idx].destAddr = (uint32_t) sound_buf_pos;
     dma_ll_pool[ll_idx].nextNode = (uint32_t) &(dma_ll_pool[ll_idx+1]);
 
@@ -160,8 +184,25 @@ int main(void) {
   //  Transfer Type: peripheral-to-memory (2, bits 13:11)
   LPC_GPDMACH1->DMACCConfig = (4 << 1) | (2 << 11);
 
+  volatile uint32_t x, y;
   while (1) {
-    if (
+    x = *((uint32_t *)0x2009c014);
+    y = LPC_GPIO0->FIOPIN0;
+    if (current_state == WAITING) {
+      if (RECORD_BUTTON_READ()) {
+        current_state = RECORDING;
+        RECORDING_LED_ON();
+
+        load_dma_node(1, record_node);
+        LPC_GPDMACH1->DMACCConfig |= _BV(0);
+      } else if (PLAY_BUTTON_READ()) {
+        current_state = PLAYING;
+        PLAYING_LED_ON();
+
+        load_dma_node(0, playback_node);
+        LPC_GPDMACH0->DMACCConfig |= _BV(0);
+      }
+    }
   }
   return 0;
 }

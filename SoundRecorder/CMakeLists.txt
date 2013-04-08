@@ -5,7 +5,7 @@ project(SoundRecorder C)
 
 set(SOURCES
  src/cr_startup_lpc176x.c
- src/main.c
+ src/soundrecorder.c
 )
 
 include_directories(../UMD_LPC1769/inc)
