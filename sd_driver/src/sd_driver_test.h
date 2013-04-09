@@ -12,10 +12,15 @@
 #include <NXP/crp.h>
 
 #include "UMDLPC/system/clocking.h"
+#include "UMDLPC/util/pins.h"
 
 #include "spi.h"
 #include "sd.h"
 
+#define CLOCK_SPEED 64000000
+
 #define _BV(n) (1 << (n))
+
+DEFINE_PIN(STATUS_LED, 0, 22);
 
 #endif

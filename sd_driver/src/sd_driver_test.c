@@ -16,29 +16,43 @@
 // See crp.h header for more information
 __CRP const unsigned int CRP_WORD = CRP_NO_CRP;
 
+uint8_t block1[SD_BLOCK_LEN], block2[SD_BLOCK_LEN];
+
 int main(void) {
+  volatile uint32_t i = 0;
+  volatile char c;
+
   // Select 12MHz crystal oscillator
   LPC_SC ->CLKSRCSEL = 1;
 
-  // Bypass PLL 0
-  PLL_bypass();
-
-  // Peripheral power
-  // LPC_SC->PCONP = 0;
-
-  // Peripheral clocks
-  // LPC_SC->PCLKSEL0 = 0;
-  // LPC_SC->PCLKSEL1 = 0;
+  // Set PLL 0 to give us 64MHz
+  PLL_init(16, 1, 6);
 
   // Setup GPIO pins
-  // LPC_GPIO0->FIODIR = 0;
-  // LPC_GPIO0->FIOSET = 0;
+  STATUS_LED_OUTPUT();
 
   // Select pin modes
   // LPC_PINCON->PINSEL1 = 0;
 
-  while (1) {
+  for (; i < CLOCK_SPEED/20; ++i) {
 
+  }
+
+  c = sd_init();
+
+  for (i = 0; i < CLOCK_SPEED/20; ++i) {
+
+  }
+
+  sd_read_block(block1, 0);
+  sd_read_block(block2, 1);
+
+  while (1) {
+    if (i > CLOCK_SPEED/2) {
+      STATUS_LED_TOGGLE();
+      i = 0;
+    }
+    i++;
   }
   return 0;
 }
