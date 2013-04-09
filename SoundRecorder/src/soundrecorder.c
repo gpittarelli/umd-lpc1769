@@ -62,6 +62,9 @@ int main(void) {
   // Peripheral power (Note: DAC is always powered)
   LPC_SC->PCONP |= PC_ADC | PC_GPDMA;
 
+  // Undivided peripheral clock for DAC (bits 23:22)
+  LPC_SC->PCLKSEL0 |= (1 << 22);
+
   // Configure pins
   //   P0.23 as AD0.0 (1 at bit 14)
   //   P0.26 as AOUT  (2 at bit 20)
