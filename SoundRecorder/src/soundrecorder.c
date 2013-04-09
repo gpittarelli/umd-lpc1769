@@ -48,7 +48,7 @@ void load_dma_node(LPC_GPDMACH_TypeDef *channel, DMALinkedListNode *node) {
 
 int main(void) {
   for (uint32_t i=0; i < AUDIO_BUFFER_LEN; ++i) {
-    audio_buffer[i] = (i % 2)? 0xfff0 : 0;
+    audio_buffer[i] = (i % 4) < 2 ? 0xfff0 : 0;
   }
 
   // Select 12MHz crystal oscillator
