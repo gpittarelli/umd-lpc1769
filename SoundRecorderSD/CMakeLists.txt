@@ -8,12 +8,14 @@ set(SOURCES
  src/soundrecordersd.c
  src/sd.c
  src/spi.c
+ src/ssd1289.c
+ src/touch.c
 )
 
 include_directories(../UMD_LPC1769/inc)
 
 # Splitting string to fit on 80 char line upsets CMake
-set(CMAKE_EXE_LINKER_FLAGS "-nostdlib -Xlinker --gc-sections -mcpu=cortex-m3 -mthumb -T ${CMAKE_CURRENT_SOURCE_DIR}/../Platform/LPC1769.ld")
+set(CMAKE_EXE_LINKER_FLAGS "-nostdlib -Xlinker --gc-sections -mcpu=cortex-m3 -mthumb -T ${CMAKE_CURRENT_SOURCE_DIR}/../Platform/LPC1769_semihosting.ld")
 
 add_definitions(
   -D__NEWLIB__

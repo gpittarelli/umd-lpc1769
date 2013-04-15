@@ -9,8 +9,8 @@ void spi_init() {
   LPC_SC->PCONP |= (1 << 21);
 
   // Peripheral clock - select undivided clock for SSP0
-  LPC_SC->PCLKSEL1 &= ~(3 << 16);
-  LPC_SC->PCLKSEL1 |= (1 << 16);
+  LPC_SC->PCLKSEL1 &= ~(3 << 10);
+  LPC_SC->PCLKSEL1 |= (1 << 10);
 
   // Select pin functions
   //   P0.15 as SCK0 (2 at 31:30)
@@ -47,7 +47,7 @@ void spi_txrx(uint8_t* tx, uint8_t* rx, uint16_t len)
 	 *   If tx == NULL and you are only receiving then transmit all 0xFF
 	 *   If rx == NULL and you are only transmitting then dump all recieved bytes
 	 */
-  volatile uint_fast8_t dummy;
+  uint32_t dummy;
   while (len--) {
     if (tx == NULL) {
       LPC_SSP0->DR = 0xff;

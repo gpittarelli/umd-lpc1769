@@ -16,15 +16,16 @@
 #include "UMDLPC/util/pins.h"
 #include "UMDLPC/util/util.h"
 
+#include "ssd1289.h"
+#include "touch.h"
+#include "fonts.h"
+#include "sd.h"
+#include "pins.h"
+
 #define _BV(n) (1 << (n))
 
 #define CLOCK_SPEED 44100000
 #define DMA_LL_POOL_SIZE 64
 #define AUDIO_BUFFER_LEN SD_BLOCK_LEN
-
-DEFINE_PIN(RECORDING_LED, 0, 22); // builtin LED
-DEFINE_PIN(PLAYING_LED, 0, 21);
-DEFINE_PIN(RECORD_BUTTON, 0, 2);
-DEFINE_PIN(PLAY_BUTTON, 0, 3);
 
 #endif
