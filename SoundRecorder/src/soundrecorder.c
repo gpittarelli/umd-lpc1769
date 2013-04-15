@@ -14,13 +14,21 @@
  */
 
 #include "soundrecorder.h"
+#include "sd.h"
 
 // Variable to store CRP value in. Will be placed automatically
 // by the linker when "Enable Code Read Protect" selected.
-// See crp.h header for more information
+// See crp.h header for more information.
 __CRP const unsigned int CRP_WORD = CRP_NO_CRP;
 
-uint32_t audio_buffer[AUDIO_BUFFER_LEN];
+// Staging buffer, which we will read a full block from the SD card
+// into and then de-compress/process into an audio buffer.
+uint8_t cur_block[SD_BLOCK_LEN];
+
+// Two audio buffers. These should each be the length of a
+// decompressed sd card block. One buffer will be playing while the
+// other is being loaded.
+uint32_t buffer1[AUDIO_BUFFER_LEN], buffer2[AUDIO_BUFFER_LEN];
 
 __attribute__ ((section(".ahb_ram")))
 DMALinkedListNode dma_ll_pool[DMA_LL_POOL_SIZE];
@@ -47,10 +55,6 @@ void load_dma_node(LPC_GPDMACH_TypeDef *channel, DMALinkedListNode *node) {
 }
 
 int main(void) {
-  for (uint32_t i=0; i < AUDIO_BUFFER_LEN; ++i) {
-    audio_buffer[i] = (i % 4) < 2 ? 0xfff0 : 0;
-  }
-
   // Select 12MHz crystal oscillator
   LPC_SC->CLKSRCSEL = 1;
 
@@ -73,6 +77,8 @@ int main(void) {
   PLAYING_LED_OUTPUT();
   RECORD_BUTTON_INPUT();
   PLAY_BUTTON_INPUT();
+
+  sd_init();
 
   // We want to sample at 44.1khz, and a full sample takes 65 cycles,
   // so we want an ADC clock of 44,100*65 = 2,866,500.
@@ -98,10 +104,6 @@ int main(void) {
   // DAC Counter Value
   //  44.1MHz / 1000 = 44.1kHz
   LPC_DAC->DACCNTVAL = (1000 - 1);
-
-  // Build up linked lists, for recording and playback
-  // store 'pointers' *_ll_node as indexes into the array
-  uint_fast16_t ll_idx = 0;
 
   // TODO: Move these loops to a DMA library file
 
