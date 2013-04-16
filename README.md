@@ -225,11 +225,13 @@ The debugger can be run two ways, with the gdb server inernally or externally:
 
 Next the following commands are run:
 
-
-    set remotetimeout 60000
+    set remotetimeout 5000
+    set mem inaccessible-by-default off
+    mem ondisconnect cont
     set arm force-mode thumb
     target extended-remote | crt_emu_cm3_nxp -2 -g -wire=<wire_type> \
                                       -pLPC1769 -vendor=NXP
+    mon semihosting ena
 
 `wire_type` is `hid` on Windows 7, and `winusb` on most other systems
 (older Windows versions, Linux, etc.)
