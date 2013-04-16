@@ -23,9 +23,9 @@ including the CMSIS library in the repo (or using a different
 library).
 
 Table of contents:
-
-* Automatic table of contents
-{:toc}
+  * [Setup](#setup)
+  * [Targets](#targets)
+  * [Command Overview](#command-overview)
 
 Setup
 -------
@@ -90,7 +90,7 @@ example, AnalogOutDMA) should look like:
     $ make
     $ # Rebuilds do not require running cmake again, just make
 
-Available Targets
+Targets
 ------
 
 The default build target builds a .axf file with debug settings.
