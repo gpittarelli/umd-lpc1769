@@ -110,15 +110,16 @@ The following targets are provided:
   * `flash-halt` The same as `flash`, but the microcontroller is left
     in a stopped state.
   * `gdb` Launch a gdb session. Complete debug information is also
-    setup. The gdb server provided by LPCXpresso does not support the
-    required setting to allow `run` (`r`) to restart the program from
-    the correct entry point. Instead, `run` results in a hard
-    fault. To restart execution, you should instead type `info files`
-    to find the entry point of the current image, and then jump to the
-    entry point with `jump` (`j`). You can also use the `load`
-    command, however that will flash the entire image to the chip
-    again, which may take a while for projects with large compiled
-    binaries.
+    setup. Note that it is not always simple to restart the current
+    program. `run` (`r`) will work for some programs, and sometimes,
+    using `jump` (`j`) to jump to the entry point of the current image
+    (found with `info files`) works. However, none of these completely
+    reset the chip - the only command that will is the `load` command,
+    however that will flash the entire image to the chip again, which
+    may take a while for projects with large compiled binaries. Also
+    note that some circuits (particularly when interfacing with other
+    chips that have their own state) may require completely unplugging
+    the circuit between program runs.
 
 If using makefiles, these are directly accessible as `make lst`,
 etc. run in the root directory of the desired project.
