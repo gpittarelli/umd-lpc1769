@@ -12,13 +12,19 @@ used to allow building of this repository in many different operating
 systems and development environments.
 
 Developing in NXP's LPCXpresso IDE for the LPC1769 is not required,
-however certain proprietary utilities are required for flashing the
-chip through the LPC-Link board. If you want to work with the board
-with no proprietary software, the LPC-Link board can be chopped off
-and the remaining board with the LPC1769 can be programmed via JTAG.
+however the IDE must be installed for the arm-none-eabi-* toolchain,
+certain proprietary utilities required for communicating with the
+LPC-Link board, and also the CMSISv2p00_LPC17xx library.
 
-The code base also requires an LPCXpresso install for the provided
-CMSIS library.
+All of these dependencies could be dropped, by getting the
+arm-none-eabi-* toolchain from another source, chopping off the
+LPC-Link board and programming the chip with JTAG instead, and
+including the CMSIS library in the repo (or using a different
+library).
+
+Table of contents:
+  * Automatic table of contents
+  {:toc}
 
 Setup
 -------
@@ -115,11 +121,6 @@ The following targets are provided:
 
 If using makefiles, these are directly accessible as `make lst`,
 etc. run in the root directory of the desired project.
-
-Table of contents:
-  * Automatic table of contents
-  {:toc}
-
 
 Command Overview
 ------
