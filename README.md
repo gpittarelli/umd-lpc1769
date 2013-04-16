@@ -1,11 +1,8 @@
 UMD LPC1796 Examples
 ======
 
-This repository contains a simple library for the NXP LPC1769
-microcontroller with example projects. Building and running this
-project (on the microcontroller) requires an installation of
-LPCXpresso which includes the ARM GCC Toolchain, NXP's LPC Library,
-and a command line utility to flash programs to the chip.
+This repositoty contains a CMake build system, a simple example
+library (UMDLPC) and a number of example projects for the LPC1769.
 
 CMake (a sort of build system that produces other build systems) is
 used to allow building of this repository in many different operating
@@ -22,7 +19,6 @@ LPC-Link board and programming the chip with JTAG instead, and
 including the CMSIS library in the repo (or using a different
 library).
 
-Table of contents:
   * [Setup](#setup)
   * [Targets](#targets)
   * [Typical Workflow](#typical-workflows)
@@ -31,41 +27,47 @@ Table of contents:
 Setup
 -------
 
-First have CMake (version >= 2.4.8), and LPCXpresso (tested with
-version 5, but should work with any version with the same toolchain)
+First have CMake (version >= 2.4.8), and LPCXpresso (version 5)
 installed.
 
-In a terminal in the `_setup` directory of this repository, run:
+ 1. First clone this repository.
+
+ 2. In a terminal in the `_setup` directory of this repository, run:
 
     cmake . -DLPCXPRESSO_DIR=<lpcxpresso_dir>
 
-Where `lpcxpresso_dir` is the root directory of your LPCXpresso
-installation (eg `/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso`).
+  Where `lpcxpresso_dir` is the root directory of your LPCXpresso
+  installation (eg `/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso`).
 
-Then extract the `CMSISv2p00_LPC17xx.zip` file into a folder of the
-same name.
+ 3. Extract the `CMSISv2p00_LPC17xx.zip` file into the folder of the
+    same name.
 
-Next, run CMake in both the `CMSISv2p00_LPC17xx` directory and the
-`UMD_LPC1769` directories:
+ 4. Genreate a build system for CMSIS and UMDLPC libraries, by running
+    CMake in both the `CMSISv2p00_LPC17xx` directory and the
+    `UMD_LPC1769` directories:
 
     cmake . -G "Unix Makefiles"
 
-The parameters are:
+  The parameters are:
 
   * `.` The directory to run CMake in.
   * `-G "Unix Makefiles"` Specifies your desired build system. Run
     cmake with no parameters to get a list of all available build
     system targets.
 
-Then to use a project, run CMake as above in the selected project
-directory, and then you can run LPCXpresso's flash utilities and gdb
-using your chosen build system (See 'Available Targets').
+ 5. Build the CMSIS and UMDLPC libraries using your chosen build
+    system. With makefiles, just run make in both directories.
+
+To use a project, run CMake as above in the selected project
+directory, build the project with your chosen build system, and then
+you can use LPCXpresso's flash utilities and gdb with your chosen
+build system (See [Targets](#targets)).
 
 The `Skeleton` directory inclues an example project which can be
 copied to create new projects. Remember to update the `CMakeLists.txt`
 file in each new project to reflect the new project's name.
 
-Overall, a full install, library build and build of a project (for
+Overall, a full install, library builds and build of a project (for
 example, AnalogOutDMA) should look like:
 
     $ # Download project
