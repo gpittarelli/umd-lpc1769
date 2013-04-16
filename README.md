@@ -7,8 +7,9 @@ project (on the microcontroller) requires an installation of
 LPCXpresso which includes the ARM GCC Toolchain, NXP's LPC Library,
 and a command line utility to flash programs to the chip.
 
-CMake is used to allow building of this repository in many different
-operating systems and development environments.
+CMake (a sort of build system that produces other build systems) is
+used to allow building of this repository in many different operating
+systems and development environments.
 
 Developing in NXP's LPCXpresso IDE for the LPC1769 is not required,
 however certain proprietary utilities are required for flashing the
@@ -56,6 +57,32 @@ The `Skeleton` directory inclues an example project which can be
 copied to create new projects. Remember to update the `CMakeLists.txt`
 file in each new project to reflect the new project's name.
 
+Overall, a full install, library build and build of a project (for
+example, AnalogOutDMA) should look like:
+
+    $ # Download project
+    $ git clone git://github.com/gpittarelli/umd-lpc1769.git
+    $ # Run setup script
+    $ cd umd-lpc1769/_setup
+    $ cmake . -DLPCXPRESSO_DIR=/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso/
+    $ # Extract CMSIS library .zip
+    $ cd ..
+    $ unzip CMSISv2p00_LPC17xx.zip -d CMSISv2p00_LPC17xx/
+    $ # Build CMSIS
+    $ cd CMSISv2p00_LPC17xx/
+    $ cmake . -G "Unix Makefiles"
+    $ make
+    $ # Build UMDLPC library
+    $ cd ../UMD_LPC1769/
+    $ cmake . -G "Unix Makefiles"
+    $ make
+    $ # We're finally ready to build a project:
+    $ cd ..
+    $ cd AnalogOutDMA/
+    $ cmake . -G "Unix Makefiles"
+    $ make
+    $ # Rebuilds do not require running cmake again, just make
+
 Available Targets
 ------
 
@@ -85,6 +112,9 @@ The following targets are provided:
     command, however that will flash the entire image to the chip
     again, which may take a while for projects with large compiled
     binaries.
+
+If using makefiles, these are directly accessible as `make lst`,
+etc. run in the root directory of the desired project.
 
 Command Overview
 ------
@@ -125,7 +155,7 @@ Extra flags for debugging:
 
 Extra flags for release build:
 
-    -O3
+    -O2 -Os
 
 ### Linking
 
@@ -189,6 +219,7 @@ The debugger can be run two ways, with the gdb server inernally or externally:
     arm-none-eabi-gdb --exec="in.axf" --symbols="in.axf.debug"
 
 Next the following commands are run:
+
 
     set remotetimeout 60000
     set arm force-mode thumb
