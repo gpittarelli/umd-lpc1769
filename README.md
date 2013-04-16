@@ -25,7 +25,7 @@ library).
 Table of contents:
   * [Setup](#setup)
   * [Targets](#targets)
-  * [Typical Workflow](#typical-workflow)
+  * [Typical Workflow](#typical-workflows)
   * [Command Overview](#command-overview)
 
 Setup
