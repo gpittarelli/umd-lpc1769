@@ -25,6 +25,7 @@ library).
 Table of contents:
   * [Setup](#setup)
   * [Targets](#targets)
+  * [Typical Workflow](#typical-workflow)
   * [Command Overview](#command-overview)
 
 Setup
@@ -123,6 +124,56 @@ The following targets are provided:
 
 If using makefiles, these are directly accessible as `make lst`,
 etc. run in the root directory of the desired project.
+
+Typical Workflows
+------
+
+These command line workflow are how I generally work with this build
+system.
+
+### Start a new project:
+
+    $ cp -R Skeleton/ NewProjectName
+    $ cd NewProjectName
+    $ mv src/main.c src/newproject.c
+    $ # Open CMakeLists.txt and change project name, and update
+        main.c in SOURCES list
+    $ cmake . -G "Unix Makfiles"
+    $ make
+
+
+### Work on an existing project
+
+    $ # Open source files in editor and make+save changes
+    $ make
+
+### Add a source file to a project
+
+When adding source files to a project, remember to open that projects
+CMakeLists.txt and add the file to the `SOURCES` variable.
+
+    set(SOURCES
+      src/cr_startup_lpc176x.c
+      src/project.c
+      # Add more source files here
+    )
+
+### Flash a program
+
+    $ # Plug in the LPC1769
+    $ make
+    $ make boot
+    $ make flash
+
+### Debug a program
+
+    $ # Plug in the LPC1769
+    $ make
+    $ make boot
+    $ make gdb
+    (gdb) b main
+    (gdb) load
+    (gdb) c
 
 Command Overview
 ------
