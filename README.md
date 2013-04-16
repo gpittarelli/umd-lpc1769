@@ -116,6 +116,11 @@ The following targets are provided:
 If using makefiles, these are directly accessible as `make lst`,
 etc. run in the root directory of the desired project.
 
+Table of contents:
+  * Automatic table of contents
+  {:toc}
+
+
 Command Overview
 ------
 
