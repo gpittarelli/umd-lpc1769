@@ -49,7 +49,6 @@ installed.
         cmake . -G "Unix Makefiles"
 
     The parameters are:
-
     * `.` The directory to run CMake in.
     * `-G "Unix Makefiles"` Specifies your desired build system. Run
       cmake with no parameters to get a list of all available build
