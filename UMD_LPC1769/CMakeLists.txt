@@ -4,7 +4,7 @@ set(CMAKE_TOOLCHAIN_FILE ../Platform/LPC1769.cmake)
 project(UMD_LPC1769 C)
 
 set(SOURCES
- src/Clocking.c
+ src/clocking.c
 )
 
 include_directories(inc)
