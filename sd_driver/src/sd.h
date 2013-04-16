@@ -2,8 +2,8 @@
 #define SD_H
 
 #define SD_BLOCK_LEN 512
-#define SD_MAX_RESP_TRIES 10
-#define SD_MAX_RESET_TRIES 10
+#define SD_MAX_RESP_TRIES 100
+#define SD_MAX_RESET_TRIES 100
 #define SD_INVALID_SECTOR 0xFFFFFFFF
 
 #define GPIO_SD_CS_m (1<<6) // 498A: Defined as P0
@@ -14,4 +14,3 @@ char sd_read_block(uint8_t* block, uint32_t block_num);
 char sd_write_block(uint8_t* block, uint32_t block_num);
 
 #endif
-

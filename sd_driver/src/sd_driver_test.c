@@ -27,6 +27,7 @@ int main(void) {
 
   // Set PLL 0 to give us 64MHz
   PLL_init(16, 1, 6);
+  SystemCoreClockUpdate();
 
   // Setup GPIO pins
   STATUS_LED_OUTPUT();
@@ -34,13 +35,13 @@ int main(void) {
   // Select pin modes
   // LPC_PINCON->PINSEL1 = 0;
 
-  for (; i < CLOCK_SPEED/20; ++i) {
+  for (; i < SystemCoreClock/20; ++i) {
 
   }
 
   c = sd_init();
 
-  for (i = 0; i < CLOCK_SPEED/20; ++i) {
+  for (i = 0; i < SystemCoreClock/20; ++i) {
 
   }
 

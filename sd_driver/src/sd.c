@@ -7,10 +7,6 @@
 #include "sd.h"
 #include "spi.h"
 
-#define SD_MAX_RESP_TRIES 100
-#define SD_MAX_RESET_TRIES 100
-#define SD_BLOCK_LEN 512
-
 static int sd_version;
 
 void sd_command(uint8_t index, uint8_t a1, uint8_t a2,
@@ -129,7 +125,8 @@ int sd_init() //{{{
 		LPC_GPIO0->FIOSET = GPIO_SD_CS_m;
 	}
 
-	// Embed : set the SPI clock to a much higher rate
+	// Set clock speed to 10MHz
+  LPC_SSP0->CPSR = SystemCoreClock / 10000000;
 
 	// check the OCR register to see if it's a high capacity card
 	LPC_GPIO0->FIOCLR = GPIO_SD_CS_m;

@@ -3,7 +3,6 @@
 #include "../inc/LPC17xx.h"
 #include "../inc/core_cm3.h"
 #include "spi.h"
-#include "sd_driver_test.h"
 
 void spi_init() {
   // Power SSP0
@@ -32,12 +31,12 @@ void spi_init() {
 
   // SSP0 Prescaler
   // The SD spec requires a slow start at 200khz
-  LPC_SSP0->CPSR = CLOCK_SPEED / 200000;
+  LPC_SSP0->CPSR = SystemCoreClock / 200000;
 
   // SPI Control Register 1
   //   Defaults to Master
   //   Start serial communications (bit 1)
-  LPC_SSP0->CR1 |= _BV(1);
+  LPC_SSP0->CR1 |= (1 << 1);
 }
 
 void spi_txrx(uint8_t* tx, uint8_t* rx, uint16_t len)
