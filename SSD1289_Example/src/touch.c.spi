@@ -1,0 +1,119 @@
+#include "touch.h"
+#include <stdio.h>
+
+void touch_init(void) {
+  // Out is in and in is out!
+  // (As in, the touch controller's in/out)
+  TOUCH_PENIRQ_INPUT();
+
+  // Power SSP1
+  LPC_SC->PCONP |= (1 << 10);
+
+  // Peripheral clock - select undivided clock for SSP0
+  LPC_SC->PCLKSEL1 &= ~(3 << 20);
+  LPC_SC->PCLKSEL1 |= (1 << 20);
+
+  // Select pin functions
+  //   P0.6 as SSEL1 (2 at 31:30)
+  //   P0.7 as SCK1
+  //   P0.9 as MOSI1
+  //   P0.8 as MISO1
+  LPC_PINCON->PINSEL0 &= ~((3 << 12) | (3 << 14) | (3 << 16) | (3 << 18));
+  LPC_PINCON->PINSEL0 |= ((2 << 12) | (2 << 14) | (2 << 16) | (2 << 18));
+
+  // SSP1 Control Register 0
+  //   8-bit transfers (7 at 3:0)
+  //   SPI (0 at 5:4)
+  //   Polarity and Phase default to Mode 0
+  LPC_SSP1->CR0 = 7;
+
+  // SSP0 Prescaler, run at 1MHz
+  LPC_SSP1->CPSR = SystemCoreClock / 1000000;
+
+  // SPI Control Register 1
+  //   Defaults to Master
+  //   Start serial communications (bit 1)
+  LPC_SSP1->CR1 |= (1 << 1);
+}
+
+#define SSP_BSY (1 << 5)
+#define SSP_RNE (1 << 2)
+
+uint8_t static _spi_txrx(uint8_t command)
+{
+  // 8 bits per transfer
+  LPC_SSP1->CR0 = 7;
+
+  volatile uint32_t dummy;
+  LPC_SSP1->DR = command;
+  dummy = LPC_SSP1->DR;
+
+
+  while (LPC_SSP1->SR & SSP_BSY)
+    ;
+
+  __NOP();__NOP();__NOP();__NOP();__NOP();__NOP();__NOP();__NOP();__NOP();__NOP();
+  __NOP();__NOP();__NOP();__NOP();__NOP();__NOP();__NOP();__NOP();__NOP();__NOP();
+
+  // 12 bits per transfer
+  LPC_SSP1->CR0 = 11;
+
+  LPC_SSP1->DR = 0xFFF;
+  while (LPC_SSP1->SR & SSP_BSY)
+    ;
+  return LPC_SSP1->DR;
+}
+
+void touch_read(uint16_t *out_x, uint16_t *out_y) {
+  int temp_x, temp_y;
+  int32_t tx = 0, ty = 0;
+
+  int_fast8_t datacount = 0;
+
+  for (uint_fast8_t i = 10; i; --i) {
+    temp_x = _spi_txrx(0x93);
+    temp_y = _spi_txrx(0xD3);
+
+    printf("%x %x\n", temp_x, temp_y);
+
+    if (temp_x && temp_y) {
+      ty += temp_x;
+      tx += temp_y;
+
+      ++datacount;
+    }
+  }
+
+  tx /= datacount;
+  ty /= datacount;
+
+  // TODO: move all these to constants. I'm just being super hacky atm
+  tx -= 0x1A0;
+  ty -= 0x2A3;
+
+  tx *= 240;
+  tx /= (0x1F10 - 0x01A0);
+
+  ty *= 320;
+  ty /= (0x1EE6 - 0x02A3);
+
+  if (tx < 0) {
+    tx = 0;
+  } else if (tx > 239) {
+    tx = 239;
+  }
+
+  if (ty < 0) {
+    ty = 0;
+  } else if (ty > 319) {
+    ty = 319;
+  }
+
+  *out_x = tx;
+  *out_y = 320-ty;
+
+}
+
+uint_fast8_t touch_available(void) {
+  return !(TOUCH_PENIRQ_READ());
+}
