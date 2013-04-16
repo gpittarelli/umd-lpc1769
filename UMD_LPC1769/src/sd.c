@@ -1,12 +1,4 @@
-#include <string.h>
-#include <stdio.h>
-#include <stdint.h>
-
-#include "UMDLPC/system/dma.h"
-#include "../inc/LPC17xx.h"
-#include "../inc/core_cm3.h"
-#include "sd.h"
-#include "spi.h"
+#include "UMDLPC/system/sd.h"
 
 static int sd_version;
 
@@ -219,6 +211,11 @@ char sd_write_block(uint8_t* block, uint32_t block_num) //{{{
 	return 1;
 } //}}}
 
+
+/***************************************************************
+ * WARNING: This DMA transfer is a work in progress, it does NOT
+ *          work yet.
+ ***************************************************************/
 char sd_read_block_dma(uint8_t* block, uint32_t block_num,
                        LPC_GPDMACH_TypeDef * const dma_channel) {
 	// TODO bounds checking
@@ -280,6 +277,10 @@ char sd_read_block_dma(uint8_t* block, uint32_t block_num,
 	return 1;
 }
 
+/***************************************************************
+ * WARNING: This DMA transfer is a work in progress, it does NOT
+ *          work yet.
+ ***************************************************************/
 char sd_write_block_dma(uint8_t* block, uint32_t block_num,
                         LPC_GPDMACH_TypeDef * const dma_channel) {
   // TODO bounds checking

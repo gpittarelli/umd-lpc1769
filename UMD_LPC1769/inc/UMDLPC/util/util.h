@@ -13,4 +13,6 @@
        __typeof__ (b) _b = (b); \
        _a < _b ? _a : _b; })
 
+#define UNUSED(x) (void)(x)
+
 #endif
