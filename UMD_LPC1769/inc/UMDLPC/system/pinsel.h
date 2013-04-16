@@ -1,0 +1,135 @@
+/* pinsel.h
+ *
+ * Declares typedefs for every field in every pinsel register, and
+ * also bit fields for the PINSEL registers themselves.
+ *
+ * See section 4.8.9
+ */
+
+#ifndef __UMDLPC_system_pinsel_h_
+#define __UMDLPC_system_pinsel_h_
+
+#include <stdint.h>
+
+/*
+  Raw data from manual:
+
+  PINSEL0
+  1:0 P0.0 GPIO Port 0.0 RD1 TXD3 SDA1 00
+  3:2 P0.1 GPIO Port 0.1 TD1 RXD3 SCL1 00
+  5:4 P0.2 GPIO Port 0.2 TXD0 AD0.7 Reserved 00
+  7:6 P0.3 GPIO Port 0.3 RXD0 AD0.6 Reserved 00
+  9:8 P0.4 GPIO Port 0.4 I2SRX_CLK RD2 CAP2.0 00
+  11:10 P0.5 GPIO Port 0.5 I2SRX_WS TD2 CAP2.1 00
+  13:12 P0.6 GPIO Port 0.6 I2SRX_SDA SSEL1 MAT2.0 00
+  15:14 P0.7 GPIO Port 0.7 I2STX_CLK SCK1 MAT2.1 00
+  17:16 P0.8 GPIO Port 0.8 I2STX_WS MISO1 MAT2.2 00
+  19:18 P0.9 GPIO Port 0.9 I2STX_SDA MOSI1 MAT2.3 00
+  21:20 P0.10 GPIO Port 0.10 TXD2 SDA2 MAT3.0 00
+  23:22 P0.11 GPIO Port 0.11 RXD2 SCL2 MAT3.1 00
+  31:30 P0.15 GPIO Port 0.15 TXD1 SCK0 SCK 00
+
+  PINSEL1
+  1:0 P0.16 GPIO Port 0.16 RXD1 SSEL0 SSEL 00
+  3:2 P0.17 GPIO Port 0.17 CTS1 MISO0 MISO 00
+  5:4 P0.18 GPIO Port 0.18 DCD1 MOSI0 MOSI 00
+  7:6 P0.19 GPIO Port 0.19 DSR1 Reserved SDA1 00
+  9:8 P0.20 GPIO Port 0.20 DTR1 Reserved SCL1 00
+  11:10 P0.21 GPIO Port 0.21 RI1 Reserved RD1 00
+  13:12 P0.22 GPIO Port 0.22 RTS1 Reserved TD1 00
+  15:14 P0.23 GPIO Port 0.23 AD0.0 I2SRX_CLK CAP3.0 00
+  17:16 P0.24 GPIO Port 0.24 AD0.1 I2SRX_WS CAP3.1 00
+  19:18 P0.25 GPIO Port 0.25 AD0.2 I2SRX_SDA TXD3 00
+  21:20 P0.26 GPIO Port 0.26 AD0.3 AOUT RXD3 00
+  23:22 P0.27 GPIO Port 0.27 SDA0 USB_SDA Reserved 00
+  25:24 P0.28 GPIO Port 0.28 SCL0 USB_SCL Reserved 00
+  27:26 P0.29 GPIO Port 0.29 USB_D+ Reserved Reserved 00
+  29:28 P0.30 GPIO Port 0.30 USB_D− Reserved Reserved 00
+
+  PINSEL2
+  1:0 P1.0 GPIO Port 1.0 ENET_TXD0 Reserved Reserved 00
+  3:2 P1.1 GPIO Port 1.1 ENET_TXD1 Reserved Reserved 00
+  9:8 P1.4 GPIO Port 1.4 ENET_TX_EN Reserved Reserved 00
+  17:16 P1.8 GPIO Port 1.8 ENET_CRS Reserved Reserved 00
+  19:18 P1.9 GPIO Port 1.9 ENET_RXD0 Reserved Reserved 00
+  21:20 P1.10 GPIO Port 1.10 ENET_RXD1 Reserved Reserved 00
+  29:28 P1.14 GPIO Port 1.14 ENET_RX_ER Reserved Reserved 00
+  31:30 P1.15 GPIO Port 1.15 ENET_REF_CLK Reserved Reserved 00
+
+  PINSEL3
+  1:0 P1.16 GPIO Port 1.16 ENET_MDC Reserved Reserved 00
+  3:2 P1.17 GPIO Port 1.17 ENET_MDIO Reserved Reserved 00
+  5:4 P1.18 GPIO Port 1.18 USB_UP_LED PWM1.1 CAP1.0 00
+  7:6 P1.19 GPIO Port 1.19 MCOA0 USB_PPWR CAP1.1 00
+  9:8 P1.20 GPIO Port 1.20 MCI0 PWM1.2 SCK0 00
+  11:10 P1.21 GPIO Port 1.21 MCABORT PWM1.3 SSEL0 00
+  13:12 P1.22 GPIO Port 1.22 MCOB0 USB_PWRD MAT1.0 00
+  15:14 P1.23 GPIO Port 1.23 MCI1 PWM1.4 MISO0 00
+  17:16 P1.24 GPIO Port 1.24 MCI2 PWM1.5 MOSI0 00
+  19:18 P1.25 GPIO Port 1.25 MCOA1 Reserved MAT1.1 00
+  21:20 P1.26 GPIO Port 1.26 MCOB1 PWM1.6 CAP0.0 00
+  23:22 P1.27 GPIO Port 1.27 CLKOUT USB_OVRCR CAP0.1 00
+  25:24 P1.28 GPIO Port 1.28 MCOA2 PCAP1.0 MAT0.0 00
+  27:26 P1.29 GPIO Port 1.29 MCOB2 PCAP1.1 MAT0.1 00
+  29:28 P1.30 GPIO Port 1.30 Reserved VBUS AD0.4 00
+  31:30 P1.31 GPIO Port 1.31 Reserved SCK1 AD0.5 00
+
+  PINSEL4
+  1:0 P2.0 GPIO Port 2.0 PWM1.1 TXD1 Reserved 00
+  3:2 P2.1 GPIO Port 2.1 PWM1.2 RXD1 Reserved 00
+  5:4 P2.2 GPIO Port 2.2 PWM1.3 CTS1 Reserved 00
+  7:6 P2.3 GPIO Port 2.3 PWM1.4 DCD1 Reserved 00
+  9:8 P2.4 GPIO Port 2.4 PWM1.5 DSR1 Reserved 00
+  11:10 P2.5 GPIO Port 2.5 PWM1.6 DTR1 Reserved 00
+  13:12 P2.6 GPIO Port 2.6 PCAP1.0 RI1 Reserved 00
+  15:14 P2.7 GPIO Port 2.7 RD2 RTS1 Reserved 00
+  17:16 P2.8 GPIO Port 2.8 TD2 TXD2 ENET_MDC 00
+  19:18 P2.9 GPIO Port 2.9 USB_CONNECT RXD2 ENET_MDIO 00
+  21:20 P2.10 GPIO Port 2.10 EINT0 NMI Reserved 00
+  23:22 P2.11 GPIO Port 2.11 EINT1 Reserved I2STX_CLK 00
+  25:24 P2.12 GPIO Port 2.12 EINT2 Reserved I2STX_WS 00
+  27:26 P2.13 GPIO Port 2.13 EINT3 Reserved I2STX_SDA 00
+
+  PINSEL7
+  19:18 P3.25[1] GPIO Port 3.25 Reserved MAT0.0 PWM1.2 00
+  21:20 P3.26[1] GPIO Port 3.26 STCLK MAT0.1 PWM1.3 00
+
+  PINSEL9
+  25:24 P4.28 GPIO Port 4.28 RX_MCLK MAT2.0 TXD3 00
+  27:26 P4.29 GPIO Port 4.29 TX_MCLK MAT2.1 RXD3 00
+
+  PINSEL10 is weird and ugly so we don't play with him
+*/
+
+enum PINSEL0_P0_0 { GPIO_Port_0_0 = 0, RD1 = 1, TXD3 = 2, SDA1 = 3 };
+enum PINSEL0_P0_1 { GPIO_Port_0_1 = 0, TD1 = 1, RXD3 = 2, SCL1 = 3 };
+enum PINSEL0_P0_2 { GPIO_Port_0_2 = 0, TXD0 = 1, AD0_7 = 2 };
+enum PINSEL0_P0_3 { GPIO_Port_0_3 = 0, RXD0 = 1, AD0_6 = 2 };
+enum PINSEL0_P0_4 { GPIO_Port_0_4 = 0, I2SRX_CLK = 1, RD2 = 2, CAP2_0 = 3 };
+enum PINSEL0_P0_5 { GPIO_Port_0_5 = 0, I2SRX_WS = 1, TD2 = 2, CAP2_1 = 3 };
+enum PINSEL0_P0_6 { GPIO_Port_0_6 = 0, I2SRX_SDA = 1, SSEL1 = 2, MAT2_0 = 3 };
+enum PINSEL0_P0_7 { GPIO_Port_0_7 = 0, I2STX_CLK = 1, SCK1 = 2, MAT2_1 = 3 };
+enum PINSEL0_P0_8 { GPIO_Port_0_8 = 0, I2STX_WS = 1, MISO1 = 2, MAT2_2 = 3 };
+enum PINSEL0_P0_9 { GPIO_Port_0_9 = 0, I2STX_SDA = 1, MOSI1 = 2, MAT2_3 = 3 };
+enum PINSEL0_P0_10 { GPIO_Port_0_10 = 0, TXD2 = 1, SDA2 = 2, MAT3_0 = 3 };
+enum PINSEL0_P0_11 { GPIO_Port_0_11 = 0, RXD2 = 1, SCL2 = 2, MAT3_1 = 3 };
+enum PINSEL0_P0_15 { GPIO_Port_0_15 = 0, TXD1 = 1, SCK0 = 2, SCK = 3 };
+
+typedef struct {
+  enum PINSEL0_P0_0 P0_0 : 2;
+  enum PINSEL0_P0_1 P0_1 : 2;
+  enum PINSEL0_P0_2 P0_2 : 2;
+  enum PINSEL0_P0_3 P0_3 : 2;
+  enum PINSEL0_P0_4 P0_4 : 2;
+  enum PINSEL0_P0_5 P0_5 : 2;
+  enum PINSEL0_P0_6 P0_6 : 2;
+  enum PINSEL0_P0_7 P0_7 : 2;
+  enum PINSEL0_P0_8 P0_8 : 2;
+  enum PINSEL0_P0_9 P0_9 : 2;
+  enum PINSEL0_P0_10 P0_10 : 2;
+  enum PINSEL0_P0_11 P0_11 : 2;
+  enum PINSEL0_P0_15 P0_15 : 2;
+} UMDLPC_PINSEL0_TypeDef;
+UMDLPC_PINSEL0_TypeDef *UMDLPC_PINSEL0 = (UMDLPC_PINSEL0_TypeDef *)0x4002C000;
+
+#endif
