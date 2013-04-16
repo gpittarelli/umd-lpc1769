@@ -23,8 +23,9 @@ including the CMSIS library in the repo (or using a different
 library).
 
 Table of contents:
-  * Automatic table of contents
-  {:toc}
+
+* Automatic table of contents
+{:toc}
 
 Setup
 -------
