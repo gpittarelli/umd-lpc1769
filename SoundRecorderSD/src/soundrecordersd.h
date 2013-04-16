@@ -10,11 +10,7 @@
 
 #include <stdint.h>
 
-#include "UMDLPC/system/clocking.h"
-#include "UMDLPC/system/pconp.h"
-#include "UMDLPC/system/dma.h"
-#include "UMDLPC/util/pins.h"
-#include "UMDLPC/util/util.h"
+#include "UMDLPC.h"
 
 #include "ssd1289.h"
 #include "touch.h"
