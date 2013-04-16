@@ -34,11 +34,11 @@ In a terminal in the `_setup` directory of this repository, run:
 Where `lpcxpresso_dir` is the root directory of your LPCXpresso
 installation (eg `/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso`).
 
-Then extract the `CMSISv2p00\_LPC17xx.zip` file into a folder of the
+Then extract the `CMSISv2p00_LPC17xx.zip` file into a folder of the
 same name.
 
-Next, run CMake in both the `CMSISv2p00\_LPC17xx` directory and the
-`UMD\_LPC1769` directories:
+Next, run CMake in both the `CMSISv2p00_LPC17xx` directory and the
+`UMD_LPC1769` directories:
 
     cmake . -G "Unix Makefiles"
 
