@@ -5,6 +5,7 @@ project(UMD_LPC1769 C)
 
 set(SOURCES
  src/clocking.c
+ src/sd.c
 )
 
 include_directories(inc)
