@@ -34,7 +34,7 @@ installed.
 
  2. In a terminal in the `_setup` directory of this repository, run:
 
-    cmake . -DLPCXPRESSO_DIR=<lpcxpresso_dir>
+        cmake . -DLPCXPRESSO_DIR=<lpcxpresso_dir>
 
   Where `lpcxpresso_dir` is the root directory of your LPCXpresso
   installation (eg `/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso`).
@@ -46,14 +46,14 @@ installed.
     CMake in both the `CMSISv2p00_LPC17xx` directory and the
     `UMD_LPC1769` directories:
 
-    cmake . -G "Unix Makefiles"
+        cmake . -G "Unix Makefiles"
 
-  The parameters are:
+    The parameters are:
 
-  * `.` The directory to run CMake in.
-  * `-G "Unix Makefiles"` Specifies your desired build system. Run
-    cmake with no parameters to get a list of all available build
-    system targets.
+    * `.` The directory to run CMake in.
+    * `-G "Unix Makefiles"` Specifies your desired build system. Run
+      cmake with no parameters to get a list of all available build
+      system targets.
 
  5. Build the CMSIS and UMDLPC libraries using your chosen build
     system. With makefiles, just run make in both directories.
