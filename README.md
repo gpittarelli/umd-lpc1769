@@ -179,7 +179,8 @@ CMakeLists.txt and add the file to the `SOURCES` variable.
 Command Overview
 ------
 
-For reference, the commands called by the toolchain look like.
+For reference, the commands called by the build system are described
+below.
 
 ### Compiling
 
