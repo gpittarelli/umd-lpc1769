@@ -148,6 +148,22 @@ system.
     $ # Open source files in editor and make+save changes
     $ make
 
+### Enabling semihosting for a project
+
+Open a project's CMakeLists.txt file and uncomment the following line:
+
+    set(SEMIHOSTING_ENABLED True)
+
+Then just rebuild the project, and semihosting messages will be
+viewable in gdb.
+
+### Adding compiler options
+
+All compiler options are configured in
+`Platform/LPC1769_project_default.cmake`. If you to add compiler
+options to a single project, you can use CMake's `add_definitions`
+command in that project's CMakeLists.txt.
+
 ### Add a source file to a project
 
 When adding source files to a project, remember to open that projects
