@@ -144,7 +144,6 @@ in any other chosen build system.
     $ cmake . -G "Unix Makfiles"
     $ make
 
-
 ### Work on an existing project
 
     $ # Open source files in editor and make+save changes
@@ -191,6 +190,12 @@ CMakeLists.txt and add the file to the `SOURCES` variable.
     $ make boot
     $ make gdb
     (gdb) b main
+    (gdb) load
+    (gdb) c
+
+    # Make changes to the program
+
+    (gdb) make
     (gdb) load
     (gdb) c
 
