@@ -129,8 +129,10 @@ etc. run in the root directory of the desired project.
 Typical Workflows
 ------
 
-These command line workflow are how I generally work with this build
-system.
+These sections detail how to do many common tasks. They are written
+under the assumption that a Makefile build system is being used, but
+the calls to `make` can all be substituted with the appropriate action
+in any other chosen build system.
 
 ### Start a new project:
 
