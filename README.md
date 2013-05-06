@@ -1,62 +1,98 @@
 UMD LPC1796 Examples
 ======
 
-This repository contains a simple library for the NXP LPC1769
-microcontroller with example projects. Building and running this
-project (on the microcontroller) requires an installation of
-LPCXpresso which includes the ARM GCC Toolchain, NXP's LPC Library,
-and a command line utility to flash programs to the chip.
+This repositoty contains a CMake build system, a simple example
+library (UMDLPC) and a number of example projects for the LPC1769.
 
-CMake is used to allow building of this repository in many different
-operating systems and development environments.
+CMake (a sort of build system that produces other build systems) is
+used to allow building of this repository in many different operating
+systems and development environments.
 
 Developing in NXP's LPCXpresso IDE for the LPC1769 is not required,
-however certain proprietary utilities are required for flashing the
-chip through the LPC-Link board. If you want to work with the board
-with no proprietary software, the LPC-Link board can be chopped off
-and the remaining board with the LPC1769 can be programmed via JTAG.
+however the IDE must be installed for the arm-none-eabi-* toolchain,
+certain proprietary utilities required for communicating with the
+LPC-Link board, and also the CMSISv2p00_LPC17xx library.
 
-The code base also requires an LPCXpresso install for the provided
-CMSIS library.
+All of these dependencies could be dropped, by getting the
+arm-none-eabi-* toolchain from another source, chopping off the
+LPC-Link board and programming the chip with JTAG instead, and
+including the CMSIS library in the repo (or using a different
+library).
+
+  * [Setup](#setup)
+  * [Targets](#targets)
+  * [Typical Workflow](#typical-workflows)
+  * [Command Overview](#command-overview)
 
 Setup
 -------
 
-First have CMake (version >= 2.4.8), and LPCXpresso (tested with
-version 5, but should work with any version with the same toolchain)
+First have CMake (version >= 2.4.8), and LPCXpresso (version 5)
 installed.
 
-In a terminal in the `_setup` directory of this repository, run:
+ 1. First clone this repository.
 
-    cmake . -DLPCXPRESSO_DIR=<lpcxpresso_dir>
+ 2. In a terminal in the `_setup` directory of this repository, run:
 
-Where `lpcxpresso_dir` is the root directory of your LPCXpresso
-installation (eg `/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso`).
+        cmake . -DLPCXPRESSO_DIR=<lpcxpresso_dir>
 
-Then extract the `CMSISv2p00\_LPC17xx.zip` file into a folder of the
-same name.
+  Where `lpcxpresso_dir` is the root directory of your LPCXpresso
+  installation (eg `/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso`).
 
-Next, run CMake in both the `CMSISv2p00\_LPC17xx` directory and the
-`UMD\_LPC1769` directories:
+ 3. Extract the `CMSISv2p00_LPC17xx.zip` file into the folder of the
+    same name.
 
-    cmake . -G "Unix Makefiles"
+ 4. Genreate a build system for CMSIS and UMDLPC libraries, by running
+    CMake in both the `CMSISv2p00_LPC17xx` directory and the
+    `UMD_LPC1769` directories:
 
-The parameters are:
+        cmake . -G "Unix Makefiles"
 
-  * `.` The directory to run CMake in.
-  * `-G "Unix Makefiles"` Specifies your desired build system. Run
-    cmake with no parameters to get a list of all available build
-    system targets.
+    The parameters are:
+    * `.` The directory to run CMake in.
+    * `-G "Unix Makefiles"` Specifies your desired build system. Run
+      cmake with no parameters to get a list of all available build
+      system targets.
 
-Then to use a project, run CMake as above in the selected project
-directory, and then you can run LPCXpresso's flash utilities and gdb
-using your chosen build system (See 'Available Targets').
+ 5. Build the CMSIS and UMDLPC libraries using your chosen build
+    system. With makefiles, just run make in both directories.
+
+To use a project, run CMake as above in the selected project
+directory, build the project with your chosen build system, and then
+you can use LPCXpresso's flash utilities and gdb with your chosen
+build system (See [Targets](#targets)).
 
 The `Skeleton` directory inclues an example project which can be
 copied to create new projects. Remember to update the `CMakeLists.txt`
 file in each new project to reflect the new project's name.
 
-Available Targets
+Overall, a full install, library builds and build of a project (for
+example, AnalogOutDMA) should look like:
+
+    $ # Download project
+    $ git clone git://github.com/gpittarelli/umd-lpc1769.git
+    $ # Run setup script
+    $ cd umd-lpc1769/_setup
+    $ cmake . -DLPCXPRESSO_DIR=/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso/
+    $ # Extract CMSIS library .zip
+    $ cd ..
+    $ unzip CMSISv2p00_LPC17xx.zip -d CMSISv2p00_LPC17xx/
+    $ # Build CMSIS
+    $ cd CMSISv2p00_LPC17xx/
+    $ cmake . -G "Unix Makefiles"
+    $ make
+    $ # Build UMDLPC library
+    $ cd ../UMD_LPC1769/
+    $ cmake . -G "Unix Makefiles"
+    $ make
+    $ # We're finally ready to build a project:
+    $ cd ..
+    $ cd AnalogOutDMA/
+    $ cmake . -G "Unix Makefiles"
+    $ make
+    $ # Rebuilds do not require running cmake again, just make
+
+Targets
 ------
 
 The default build target builds a .axf file with debug settings.
@@ -76,20 +112,98 @@ The following targets are provided:
   * `flash-halt` The same as `flash`, but the microcontroller is left
     in a stopped state.
   * `gdb` Launch a gdb session. Complete debug information is also
-    setup. The gdb server provided by LPCXpresso does not support the
-    required setting to allow `run` (`r`) to restart the program from
-    the correct entry point. Instead, `run` results in a hard
-    fault. To restart execution, you should instead type `info files`
-    to find the entry point of the current image, and then jump to the
-    entry point with `jump` (`j`). You can also use the `load`
-    command, however that will flash the entire image to the chip
-    again, which may take a while for projects with large compiled
-    binaries.
+    setup. Note that it is not always simple to restart the current
+    program. `run` (`r`) will work for some programs, and sometimes,
+    using `jump` (`j`) to jump to the entry point of the current image
+    (found with `info files`) works. However, none of these completely
+    reset the chip - the only command that will is the `load` command,
+    however that will flash the entire image to the chip again, which
+    may take a while for projects with large compiled binaries. Also
+    note that some circuits (particularly when interfacing with other
+    chips that have their own state) may require completely unplugging
+    the circuit between program runs.
+
+If using makefiles, these are directly accessible as `make lst`,
+etc. run in the root directory of the desired project.
+
+Typical Workflows
+------
+
+These sections detail how to do many common tasks. They are written
+under the assumption that a Makefile build system is being used, but
+the calls to `make` can all be substituted with the appropriate action
+in any other chosen build system.
+
+### Start a new project:
+
+    $ cp -R Skeleton/ NewProjectName
+    $ cd NewProjectName
+    $ mv src/main.c src/newproject.c
+    $ # Open CMakeLists.txt and change project name, and update
+        main.c in SOURCES list
+    $ cmake . -G "Unix Makfiles"
+    $ make
+
+### Work on an existing project
+
+    $ # Open source files in editor and make+save changes
+    $ make
+
+### Enabling semihosting for a project
+
+Open a project's CMakeLists.txt file and uncomment the following line:
+
+    set(SEMIHOSTING_ENABLED True)
+
+Then just rebuild the project, and semihosting messages will be
+viewable in gdb.
+
+### Adding compiler options
+
+All compiler options are configured in
+`Platform/LPC1769_project_default.cmake`. If you to add compiler
+options to a single project, you can use CMake's `add_definitions`
+command in that project's CMakeLists.txt.
+
+### Add a source file to a project
+
+When adding source files to a project, remember to open that projects
+CMakeLists.txt and add the file to the `SOURCES` variable.
+
+    set(SOURCES
+      src/cr_startup_lpc176x.c
+      src/project.c
+      # Add more source files here
+    )
+
+### Flash a program
+
+    $ # Plug in the LPC1769
+    $ make
+    $ make boot
+    $ make flash
+
+### Debug a program
+
+    $ # Plug in the LPC1769
+    $ make
+    $ make boot
+    $ make gdb
+    (gdb) b main
+    (gdb) load
+    (gdb) c
+
+    # Make changes to the program
+
+    (gdb) make
+    (gdb) load
+    (gdb) c
 
 Command Overview
 ------
 
-For reference, the commands called by the toolchain look like.
+For reference, the commands called by the build system are described
+below.
 
 ### Compiling
 
@@ -125,7 +239,7 @@ Extra flags for debugging:
 
 Extra flags for release build:
 
-    -O3
+    -O2 -Os
 
 ### Linking
 
@@ -190,10 +304,13 @@ The debugger can be run two ways, with the gdb server inernally or externally:
 
 Next the following commands are run:
 
-    set remotetimeout 60000
+    set remotetimeout 5000
+    set mem inaccessible-by-default off
+    mem ondisconnect cont
     set arm force-mode thumb
     target extended-remote | crt_emu_cm3_nxp -2 -g -wire=<wire_type> \
                                       -pLPC1769 -vendor=NXP
+    mon semihosting ena
 
 `wire_type` is `hid` on Windows 7, and `winusb` on most other systems
 (older Windows versions, Linux, etc.)

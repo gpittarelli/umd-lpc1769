@@ -29,9 +29,12 @@ endif()
 
 add_custom_target(gdb
   COMMAND ${LPCXPRESSO_GNU_DIR}/arm-none-eabi-gdb
-               --eval-command=\"set remotetimeout 60000\"
-               --eval-command=\"set arm force-mode thumb\"
         --eval-command=\"target extended-remote | ${LPCXPRESSO_FLASH} -2 -g\"
+               --eval-command=\"set remotetimeout 5000\"
+               --eval-command=\"set mem inaccessible-by-default off\"
+               --eval-command=\"mon ondisconnect cont\"
+               --eval-command=\"set arm force-mode thumb\"
+               --eval-command=\"mon semihosting ena\"
                --exec=\"${FULL_OUTPUT_NAME}\"
                --symbols=\"${FULL_OUTPUT_NAME}.debug\")
 

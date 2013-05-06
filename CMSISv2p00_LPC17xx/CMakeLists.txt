@@ -12,9 +12,6 @@ include_directories(inc)
 
 set(CMAKE_EXE_LINKER_FLAGS "-mcpu=cortex-m3 -mthumb")
 
-set(COMPILE_DEFINITIONS_DEBUG    -O0 -g3 -DDEBUG)
-set(COMPILE_DEFINITIONS_RELEASE  -O2)
-
 add_definitions(
   -D__REDLIB__
   -D__CODE_RED
