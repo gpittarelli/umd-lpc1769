@@ -47,7 +47,7 @@ inline static void name##_OUTPUT() { \
   LPC_GPIO##port ->FIODIR |= (1 << pin); \
 } \
 inline static uint_fast8_t name##_READ() { \
-  return ( LPC_GPIO##port ->FIOPIN >> pin) & 1;  \
+  return ( LPC_GPIO##port ->FIOPIN0 >> pin) & 1; \
 }
 
 #endif
