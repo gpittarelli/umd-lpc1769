@@ -30,6 +30,34 @@ Setup
 First have CMake (version >= 2.4.8), and LPCXpresso (version 5)
 installed.
 
+Then a full install, build of the libraries and build of a project
+(for example, AnalogOutDMA) should look like:
+
+    # Download project
+    git clone git://github.com/gpittarelli/umd-lpc1769.git
+    # Run setup script
+    cd umd-lpc1769/_setup
+    cmake . -DLPCXPRESSO_DIR=/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso/
+    # Extract CMSIS library .zip
+    cd ..
+    unzip CMSISv2p00_LPC17xx.zip -d CMSISv2p00_LPC17xx/
+    # Build CMSIS
+    cd CMSISv2p00_LPC17xx/
+    cmake . -G "Unix Makefiles"
+    make
+    # Build UMDLPC library
+    cd ../UMD_LPC1769/
+    cmake . -G "Unix Makefiles"
+    make
+    # We're finally ready to build a project:
+    cd ..
+    cd AnalogOutDMA/
+    cmake . -G "Unix Makefiles"
+    make
+    # Rebuilds do not require running cmake again, just make
+
+A more in depth explanation of the steps being taken:
+
  1. First clone this repository.
 
  2. In a terminal in the `_setup` directory of this repository, run:
@@ -42,6 +70,8 @@ installed.
  3. Extract the `CMSISv2p00_LPC17xx.zip` file into the folder of the
     same name.
 
+        unzip CMSISv2p00_LPC17xx.zip -d CMSISv2p00_LPC17xx/
+
  4. Genreate a build system for CMSIS and UMDLPC libraries, by running
     CMake in both the `CMSISv2p00_LPC17xx` directory and the
     `UMD_LPC1769` directories:
@@ -52,7 +82,14 @@ installed.
     * `.` The directory to run CMake in.
     * `-G "Unix Makefiles"` Specifies your desired build system. Run
       cmake with no parameters to get a list of all available build
-      system targets.
+      system targets. (The -G "Unix Makefiles" may be the default for
+      Unix systems, but I would recommend explicity writing it out.)
+
+    Note: If you get an error message here complaining that you did
+    not configure the LPCXPRESO_DIR in step 2, double check that
+    `LPCXpressoDir.cmake` was generated in the root directory of the
+    repo. Open the file and check that the directory path points to a
+    version 5 installation of LPCXpresso.
 
  5. Build the CMSIS and UMDLPC libraries using your chosen build
     system. With makefiles, just run make in both directories.
@@ -65,32 +102,6 @@ build system (See [Targets](#targets)).
 The `Skeleton` directory inclues an example project which can be
 copied to create new projects. Remember to update the `CMakeLists.txt`
 file in each new project to reflect the new project's name.
-
-Overall, a full install, library builds and build of a project (for
-example, AnalogOutDMA) should look like:
-
-    $ # Download project
-    $ git clone git://github.com/gpittarelli/umd-lpc1769.git
-    $ # Run setup script
-    $ cd umd-lpc1769/_setup
-    $ cmake . -DLPCXPRESSO_DIR=/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso/
-    $ # Extract CMSIS library .zip
-    $ cd ..
-    $ unzip CMSISv2p00_LPC17xx.zip -d CMSISv2p00_LPC17xx/
-    $ # Build CMSIS
-    $ cd CMSISv2p00_LPC17xx/
-    $ cmake . -G "Unix Makefiles"
-    $ make
-    $ # Build UMDLPC library
-    $ cd ../UMD_LPC1769/
-    $ cmake . -G "Unix Makefiles"
-    $ make
-    $ # We're finally ready to build a project:
-    $ cd ..
-    $ cd AnalogOutDMA/
-    $ cmake . -G "Unix Makefiles"
-    $ make
-    $ # Rebuilds do not require running cmake again, just make
 
 Targets
 ------
@@ -124,7 +135,9 @@ The following targets are provided:
     the circuit between program runs.
 
 If using makefiles, these are directly accessible as `make lst`,
-etc. run in the root directory of the desired project.
+etc. (run in the root directory of the desired project). If you are
+using a build system based around IDE project files (such as Eclipse
+or Visual Studio), the targets should be accesible from a menu.
 
 Typical Workflows
 ------
@@ -139,8 +152,10 @@ in any other chosen build system.
     $ cp -R Skeleton/ NewProjectName
     $ cd NewProjectName
     $ mv src/main.c src/newproject.c
-    $ # Open CMakeLists.txt and change project name, and update
-        main.c in SOURCES list
+    $ $EDITOR CMakeLists.txt
+      # Edit CMakeLists.txt, changing the project name, and renaming
+        main.c -> newproject.c in SOURCES list
+    $
     $ cmake . -G "Unix Makfiles"
     $ make
 
@@ -203,7 +218,8 @@ Command Overview
 ------
 
 For reference, the commands called by the build system are described
-below.
+below. I highly recommend reading this section if you want to modify
+the build system.
 
 ### Compiling
 
@@ -252,9 +268,9 @@ Linker flags:
     -mthumb
     -T ../Platform/LPC1769.ld
 
-Note the linker script `LPC1769.ld` in the `Platform` directory, which
-can be exchanged for `LPC1769_semihosting.ld` in order to build
-against the Newlib library for semihosting.
+Note the linker script `LPC1769.ld` in the `Platform`
+directory. `LPC1769_semihosting.ld` is used instead when semihosting
+is enabled.
 
 ### Booting the LPC-Link
 
