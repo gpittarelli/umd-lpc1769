@@ -26,7 +26,6 @@ else()
 
 endif()
 
-
 add_custom_target(gdb
   COMMAND ${LPCXPRESSO_GNU_DIR}/arm-none-eabi-gdb
         --eval-command=\"target extended-remote | ${LPCXPRESSO_FLASH} -2 -g\"
