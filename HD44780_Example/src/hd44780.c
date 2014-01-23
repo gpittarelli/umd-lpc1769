@@ -53,6 +53,10 @@ void LCD_init(void) {
   LCD_RW_OUTPUT();
   LCD_CLK_OUTPUT();
 
+  // Set all data bus pins output, off
+  LPC_GPIO1->FIODIR |= 0xff << 18;
+  LPC_GPIO1->FIOCLR |= 0xff << 18;
+
   _delay_ms(100);
 
   LCD_RS_OFF();
@@ -79,6 +83,10 @@ void LCD_init(void) {
 
 void LCD_clear() { LCD_write_command(1); }
 void LCD_cursor_home() { LCD_write_command(2); }
+
+void LCD_move_cursor(uint_fast8_t x, uint_fast8_t y) {
+  LCD_set_DDRAM(x + (0x40 * y));
+}
 
 void LCD_mode(LCDCharacterDirection dir, LCDDisplayShift shift) {
   LCD_write_command((1 << 2) | dir | shift);

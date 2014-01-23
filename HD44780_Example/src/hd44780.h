@@ -61,6 +61,7 @@ void LCD_init(void);
 void LCD_write_command(uint_fast8_t command);
 void LCD_clear();
 void LCD_cursor_home();
+void LCD_move_cursor(uint_fast8_t x, uint_fast8_t y);
 void LCD_mode(LCDCharacterDirection dir, LCDDisplayShift shift);
 void LCD_display_settings(LCDPower power, LCDCursor cursor,
                           LCDCursorBlink cursor_blink);

@@ -7,8 +7,8 @@
 
 #include "UMDLPC/util/pins.h"
 
-DEFINE_PIN(LCD_RS, 3, 25);
-DEFINE_PIN(LCD_RW, 3, 26);
-DEFINE_PIN(LCD_CLK, 4, 28);
+DEFINE_PIN(LCD_RS, 0, 9);
+DEFINE_PIN(LCD_RW, 0, 8);
+DEFINE_PIN(LCD_CLK, 0, 7);
 
 #endif

@@ -25,15 +25,36 @@ int main(void) {
 //  PLL_init(12, 1, 18); // 16MHz
   SystemCoreClockUpdate();
 
+  volatile uint32_t i = 1;
+  while (i < (1 << 23)) { ++i; }
+
   LCD_init();
+  LCD_function_set(BUS_WIDTH_8, LINE_COUNT_2, FONT_5_8);
+
+  i = 1;
+  while (i < (1 << 23)) { ++i; }
 
   LCD_write('a');
   LCD_write('b');
   LCD_write('c');
   LCD_write('d');
 
+  char c = 'e';
+  uint_fast8_t x = 0, y = 0;
   while(1) {
+    LCD_write(c);
+    ++c;
 
+    ++x;
+    if (x > 15) {
+      x = 0;
+      y ^= 1;
+    }
+
+    LCD_move_cursor(x, y);
+
+    i = 1;
+    while (i < (1 << 23)) { ++i; }
   }
 
   return 0;
